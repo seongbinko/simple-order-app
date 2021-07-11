@@ -1,7 +1,7 @@
 # Simple Order App
 - 소개: 간단하게 상품 주문 결제할 수 있는 어플리케이션
 - 특징
-    - REST API / Spring Boot / JPA / Dockerfile 를 통한 이미지 구성 / 
+    - REST API / Spring Boot / JPA / Dockerfile 를 통한 이미지 구성 
     - Spring Security/ Jwt 인증 
 
 ## Intallation
