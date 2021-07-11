@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<body>
+<div th:replace="fragments.html :: main-nav"></div>
+<div class="py-5 text-center">
+    <ul id="category-toggle" class="nav nav-pills justify-content-center">
+        <li class="nav-item border">
+            <a class="nav-link active" data-toggle="pill" href="#" onclick="viewItems('0','')">ALL</a>
+        </li>
+        <li class="nav-item border">
+            <a class="nav-link" data-toggle="pill" href="#" onclick="viewItems('1','')">먹을거리</a>
+        </li>
+        <li class="nav-item border">
+            <a class="nav-link" data-toggle="pill" href="#" onclick="viewItems('2','')">주류/음료</a>
+        </li>
+    </ul>
+</div>
+<div class="container">
+    <div id="item_list" class="row">
+
+    </div>
+</div>
+<div th:replace="fragments.html :: footer"></div>
+<script th:replace="fragments.html :: main-script"></script>
+</body>
+</html>
