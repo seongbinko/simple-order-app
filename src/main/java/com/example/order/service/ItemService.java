@@ -22,12 +22,12 @@ public class ItemService {
     public List<ItemResponseDto> viewItems(ItemsRequestDto itemsRequestDto) {
 
         if(0 == itemsRequestDto.getCategoryId()) {
-            List<Item> items = itemRepository.findByNameStartsWithOrderByNameAsc(itemsRequestDto.getKeyword());
+            List<Item> items = itemRepository.findByNameContainingOrderByName(itemsRequestDto.getKeyword());
             return createItemResponseDtoList(items);
 
         }
         Category category = categoryRepository.findById(Long.valueOf(itemsRequestDto.getCategoryId())).orElse(null);
-        List<Item> items = itemRepository.findByCategoryAndNameStartingWithOrderByName(category,itemsRequestDto.getKeyword());
+        List<Item> items = itemRepository.findByCategoryOrderByName(category);
         return createItemResponseDtoList(items);
     }
 

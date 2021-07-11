@@ -36,4 +36,9 @@ public class Member extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private MemberRole role;
 
+    public void addOrder(Order order) {
+        this.orders.add(order);
+        order.setMember(this);
+    }
+
 }

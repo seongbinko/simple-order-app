@@ -4,13 +4,15 @@ import com.example.order.entity.Category;
 import com.example.order.entity.Item;
 import com.example.order.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional(readOnly = true)
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
 
-    List<Item> findByCategoryAndNameStartingWithOrderByName(Category category, String keyword);
+    List<Item> findByNameContainingOrderByName(String keyword);
 
-    List<Item> findByNameStartsWithOrderByNameAsc(String keyword);
+    List<Item> findByCategoryOrderByName(Category category);
 }
