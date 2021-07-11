@@ -38,7 +38,8 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
 
 
-        Order newOrder = orderRepository.save(Order.builder().build());
+        Order newOrder = orderRepository.save(Order.builder()
+                .isPayment(false).build());
 
         int orderPrice = 0;
         for(int i=0; i < orderRequestDto.getItemIdList().size(); i++) {
@@ -73,7 +74,7 @@ public class OrderService {
     public List<OrderResponseDto> viewOrders(CustomUserDetails userDetails) {
         Member member = memberRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
-        List<Order> orders = orderRepository.findAllByMember(member);
+        List<Order> orders = orderRepository.findAllByMemberAndIsPaymentFalse(member);
 
         return orders.stream().map(
                 order -> OrderResponseDto.builder()

@@ -29,7 +29,7 @@ public class Item extends BaseEntity{
 
     private String status;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "item")
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 

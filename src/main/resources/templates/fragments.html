@@ -54,7 +54,7 @@
             </li>
             &nbsp;&nbsp;
             <li class="nav-item" id="payment-li">
-                <button class="nav-link btn btn-outline-success" data-toggle="modal" data-target="#paymentModal" onclick="checkIsLogin('#paymentModal')">결제내역</button>
+                <button class="nav-link btn btn-outline-success" data-toggle="modal" data-target="#paymentModal" onclick="viewPayment()">결제내역</button>
             </li>
             &nbsp;&nbsp;
             <li class="nav-item" id="login-li">
@@ -156,40 +156,13 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>상품명</th>
-                            <th>단가</th>
-                            <th>수량</th>
-                            <th>가격</th>
+                            <th>결제일</th>
+                            <th>결제액</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td>나가사키짬뽕</td>
-                            <td>8900</td>
-                            <td>2</td>
-                            <td>17800원</td>
-                        </tr>
-                        <tr>
-                            <td>나가사키짬뽕</td>
-                            <td>8900</td>
-                            <td>2</td>
-                            <td>17800원</td>
-                        </tr>
-                        <tr>
-                            <td>나가사키짬뽕</td>
-                            <td>8900</td>
-                            <td>2</td>
-                            <td>17800원</td>
-                        </tr>
-                        </tbody>
+                        <tbody id="payment-table-body"></tbody>
                     </table>
                 </div>
-
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                   <h5>총가격: <span>89000원</span></h5>
-                </div>
-
             </div>
         </div>
     </div>
@@ -673,6 +646,7 @@
             return false;
         }
         $("#order-table-body").empty();
+        $('#totalOrderPrice').empty();
 
         $.ajax({
             type: "GET",
@@ -738,9 +712,73 @@
 
             },
             error: function (response) {
-                alert("주문하는 도중 오류가 발생하였습니다.")
+                alert("주문취소 도중 오류가 발생하였습니다.")
             }
         })
     }
+
+    function paymentOrder() {
+        const token = $.cookie('accessToken')
+        if(token == undefined) {
+            alert("로그인 후 결제가 가능합니다.");
+            return false;
+        }
+        if(confirm("결제 하시겠습니까?") == false) {
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/api/payment",
+            contentType: "application/json",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function () {
+                alert("결제가 완료되었습니다.")
+                $("#orderModal").modal("hide");
+            },
+            error: function () {
+                alert("주문취소 도중 오류가 발생하였습니다.")
+            }
+        })
+    }
+    function viewPayment() {
+        const token = $.cookie('accessToken')
+        if(token == undefined) {
+            alert("로그인 후 조회가 가능합니다.");
+            return false;
+        }
+        $("#payment-table-body").empty();
+
+        $.ajax({
+            type: "GET",
+            url: "/api/payment",
+            contentType: "application/json",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            dataType: "json",
+            success: function (payment) {
+                console.log(payment)
+
+                if(payment.length == 0) {
+                    $("#payment-table-body").append(`<tr><td colspan="2">주문 내역이 없습니다.</td></tr>`);
+                    return false;
+                }
+                let row = `<tr>
+                                <td>${payment.createdAt}</td>
+                                <td>${payment.totalPrice}</td>
+                            </tr>`
+                $("#payment-table-body").append(row);
+            },
+            error: function () {
+                alert("주문내역 조회중 오류가 발생하였습니다.")
+                $("#order-li").hide();
+            }
+        })
+    }
+
+
 </script>
 </html>

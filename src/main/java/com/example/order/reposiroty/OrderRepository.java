@@ -14,5 +14,5 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     @Transactional
     void deleteByMember(Member member);
 
-    List<Order> findAllByMember(Member member);
+    List<Order> findAllByMemberAndIsPaymentFalse(Member member);
 }

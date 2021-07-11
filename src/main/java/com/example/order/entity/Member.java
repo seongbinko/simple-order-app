@@ -29,9 +29,13 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 100) // name column을 명시합니다. 필수이고 길이는 100입니다.
     private String password;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member")
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    @Builder.Default
+    private List<Payment> payments = new ArrayList<>();
 
     @Enumerated(value = EnumType.STRING)
     private MemberRole role;
@@ -39,6 +43,11 @@ public class Member extends BaseEntity {
     public void addOrder(Order order) {
         this.orders.add(order);
         order.setMember(this);
+    }
+
+    public void addPayment(Payment payment) {
+        this.payments.add(payment);
+        payment.setMember(this);
     }
 
 }

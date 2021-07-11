@@ -32,6 +32,9 @@ public class Order extends BaseEntity {
 
     private int orderPrice;
 
+    private Boolean isPayment;
+
+
     public void addOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
         orderItem.setOrder(this);
@@ -43,5 +46,13 @@ public class Order extends BaseEntity {
 
     public void setMember(Member member) {
         this.member = member;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public void setIsPayment(Boolean payment) {
+        isPayment = payment;
     }
 }
