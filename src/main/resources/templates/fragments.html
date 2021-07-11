@@ -118,7 +118,7 @@
                 <div class="modal-footer">
                     <h5><span id="totalOrderPrice"></span></h5>
                     <button type="button" class="btn btn-primary" onclick="paymentOrder()">결제하기</button>
-                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">주문취소</button>
+<!--                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">주문취소</button>  // 버그로 인해 임시 막음-->
                 </div>
             </div>
         </div>
@@ -443,8 +443,6 @@
             },
             success: function (items) {
                 $('#item_list').empty();
-
-                //let itemCard = `<div class="row">`
                 $.each(items, function (index, item) {
                     let itemCard = `<div class="col-sm-3 d-flex align-items-stretch" >
                                         <div class="card">
@@ -606,7 +604,7 @@
             success: function (orders) {
                 console.log(orders)
                 if(orders.length == 0) {
-                    let row = `<tr><td colspan="4">주문 내역이 없습니다.</td></tr>`
+                    let row = `<tr><td colspan="4" id="empty-order">주문 내역이 없습니다.</td></tr>`
                     $("#order-table-body").append(row);
                     return false;
                 }
@@ -665,11 +663,18 @@
     }
 
     function paymentOrder() {
+
+
         const token = $.cookie('accessToken')
         if(token == undefined) {
             alert("로그인 후 결제가 가능합니다.");
             return false;
         }
+        if($('#empty-order').text().length > 0) {
+            alert('결제할 내역이 존재하지 않습니다.')
+            return false;
+        }
+
         if(confirm("결제 하시겠습니까?") == false) {
             return false;
         }
@@ -696,6 +701,7 @@
             alert("로그인 후 조회가 가능합니다.");
             return false;
         }
+
         $("#payment-table-body").empty();
 
         $.ajax({
