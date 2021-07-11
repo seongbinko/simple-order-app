@@ -1,0 +1,672 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <title>데모판</title>
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">-->
+<!--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>-->
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <style>
+        .container {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<nav th:fragment="main-nav" class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <a class="navbar-brand" href="/" th:href="@{/}">
+        데모 메뉴
+    </a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" id="signup-li">
+                <button class="nav-link btn btn-outline-primary" type="button" data-toggle="modal" data-target="#signupModal">
+                    <i class="fa fa-plus" aria-hidden="true"></i> 가입하기
+                </button>
+            </li>
+            &nbsp;&nbsp;
+            <li class="nav-item">
+                <div class="form-inline">
+                    <input id="keyword" class="form-control mr-sm-2" name="keyword" type="search" placeholder="메뉴 검색 " aria-label="Search" />
+                    <button id="search-button" type="button" class="btn btn-outline-primary" onclick="searchKeyword()"><i class="fa fa-search fa-lg"></i></button>
+                </div>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav justify-content-end">
+            <li class="nav-item">
+                <button class="nav-link btn btn-outline-warning" data-toggle="modal" data-target="#cartModal" onclick="viewCart()">장바구니</button>
+            </li>
+            &nbsp;&nbsp;
+            <li class="nav-item">
+                <button class="nav-link btn btn-outline-danger" data-toggle="modal" data-target="#orderModal">주문내역</button>
+            </li>
+            &nbsp;&nbsp;
+            <li class="nav-item">
+                <button class="nav-link btn btn-outline-success" data-toggle="modal" data-target="#paymentModal">결제내역</button>
+            </li>
+            &nbsp;&nbsp;
+            <li class="nav-item" id="login-li">
+                <button id="btn-login" class="nav-link btn btn-outline-secondary" data-toggle="modal" data-target="#loginModal">로그인</button>
+            </li>
+            <li class="nav-item" id="logout-li">
+                <button id="btn-logout" class="nav-link btn btn-outline-secondary" type="button" onclick="logout()">로그아웃</button>
+            </li>
+        </ul>
+    </div>
+    <!-- The Modal -->
+    <div class="modal" id="cartModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h1 class="modal-title">장바구니</h1>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>상품명</th>
+                            <th>더하기</th>
+                            <th>수량</th>
+                            <th>빼기</th>
+                            <th>가격</th>
+                            <th>삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody id="cart-table-body">
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+<!--                    <h5>총가격: 20000원</h5>-->
+                    <button type="button" class="btn btn-primary" onclick="orderCartItem()">주문하기</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">계속 쇼핑하기</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="orderModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h1 class="modal-title">주문내역</h1>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>주문시간</th>
+                            <th>상품명</th>
+                            <th>수량</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>16:30:28</td>
+                            <td>케이준 치킨샐러드<br/>나가사키짬뽕<br/></td>
+                            <td>2<br/>3</td>
+                        </tr>
+                        <tr>
+                            <td>16:30:28</td>
+                            <td>케이준 치킨샐러드</td>
+                            <td>2</td>
+                        </tr>
+                        <tr>
+                            <td>16:30:28</td>
+                            <td>케이준 치킨샐러드</td>
+                            <td>2</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">결제하기</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">주문취소</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="paymentModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h1 class="modal-title">결제 내역</h1>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>상품명</th>
+                            <th>단가</th>
+                            <th>수량</th>
+                            <th>가격</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>나가사키짬뽕</td>
+                            <td>8900</td>
+                            <td>2</td>
+                            <td>17800원</td>
+                        </tr>
+                        <tr>
+                            <td>나가사키짬뽕</td>
+                            <td>8900</td>
+                            <td>2</td>
+                            <td>17800원</td>
+                        </tr>
+                        <tr>
+                            <td>나가사키짬뽕</td>
+                            <td>8900</td>
+                            <td>2</td>
+                            <td>17800원</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                   <h5>총가격: <span>89000원</span></h5>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="loginModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h1 class="modal-title">로그인</h1>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center">
+                        <form>
+                            <div class="form-group">
+                                <label for="nickname">닉네임</label>
+                                <input type="text" class="form-control" id="nickname" >
+                                <small id="idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(._-) 사용 가능</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">패스워드</label>
+                                <input type="password" class="form-control" id="password" aria-describedby="passwordHelp">
+                                <small id="passwordHelp" class="form-text text-muted">공백없이 문자와 숫자로만 8자 이상 20자 이내로 입력하세요.</small>
+                            </div>
+                            <div class="form-group">
+                                <button aria-describedby="submitHelp" class="btn btn-primary btn-block" type="button"
+                                        onclick="login()">로그인
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+<!--        <script th:replace="fragments.html :: login"></script>-->
+        </div>
+    </div>
+    <div class="modal" id="signupModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h1 class="modal-title">회원가입</h1>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center">
+                        <form>
+                            <div class="form-group">
+                                <label for="signup-nickname">닉네임</label>
+                                <input type="text" class="form-control" id="signup-nickname" >
+                                <small id="signup-idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(._-) 사용 가능</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">패스워드</label>
+                                <input type="password" class="form-control" id="signup-password" aria-describedby="signup-passwordHelp">
+                                <small id="signup-passwordHelp" class="form-text text-muted">공백없이 문자와 숫자로만 8자 이상 20자 이내로 입력하세요.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-passwordConfirm">패스워드 확인</label>
+                                <input type="password" class="form-control" id="signup-passwordConfirm">
+                                <small id="signup-passwordConfirmHelp" class="form-text text-muted"></small>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="form-control btn btn-primary" onclick="signUp()">회원 가입</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+<!--            <script th:replace="fragments.html :: signup"></script>-->
+        </div>
+    </div>
+    <script th:replace="fragments.html :: main-nav-script"></script>
+</nav>
+<footer th:fragment="footer">
+    <div class="row justify-content-center">
+        <small class="d-block mb-3 text-muted">&copy; github.com/seongbinko 2021</small>
+    </div>
+</footer>
+<script type="application/javascript" th:inline="javascript" th:fragment="main-nav-script">
+    const initCategoryId = 0;
+    const initKeyword = "";
+
+    $(document).ready(function () {
+        let token = $.cookie('accessToken');
+        if (token == undefined) {
+            $('#logout-li').hide();
+        } else {
+            $('#login-li').hide();
+            $('#signup-li').hide();
+            $('#logout-li').show();
+        }
+
+        viewItems(initCategoryId, initKeyword);
+    })
+
+    function signUp() {
+        if(check_dup()) {
+            $.ajax({
+                type: "POST",
+                url: "/api/auth/local/new",
+                data: {
+                    nickname: $('#signup-nickname').val(),
+                    password: $('#signup-password').val(),
+                    passwordConfirm: $('#signup-passwordConfirm').val()
+                },
+                success: function (response) {
+                    alert('회원가입이 완료되었습니다.')
+                    //window.location.href = "/";
+                    $("#signupModal").modal("hide");
+                    $('#loginModal').modal('show');
+                },
+                error: function (responae) {
+                    // Todo 에러 처리
+                    alert("닉네임 혹은 패스워드를 확인해주세요")
+                }
+            })
+        }
+    }
+    function login() {
+
+        let nickname = $("#nickname").val();
+        let password = $("#password").val();
+
+        if (nickname == "") {
+            alert("닉네임 입력해주세요");
+            return false;
+        }
+
+        if (password == "") {
+            alert("패스워드를 입력해주세요");
+            return false;
+        }
+        // [{
+        //     "codes": ["invalid.nickname.loginRequestDto.nickname", "invalid.nickname.nickname", "invalid.nickname.java.lang.String", "invalid.nickname"],
+        //     "arguments": ["asdfasdf"],
+        //     "defaultMessage": "존재하지 않는 닉네임입니다.",
+        //     "objectName": "loginRequestDto",
+        //     "field": "nickname",
+        //     "rejectedValue": "asdfasdf",
+        //     "bindingFailure": false,
+        //     "code": "invalid.nickname"
+        // }]
+        $.ajax({
+            type: "POST",
+            url: "/api/auth/local",
+            data: { nickname: nickname, password: password },
+            success: function (response) {
+
+                // var date = new Date();
+                // date.setTime(date.getTime() + 1*60*1000); // 1분
+                // $.cookie('key', 'value', { expires: date, path : '/' });
+
+                var date = new Date();
+                date.setTime(date.getTime() + 20*1000); // 1초
+                $.cookie('accessToken', response.accessToken, { expires: date, path : '/' });
+
+                window.location.href = "/"
+                // $.cookie('accessToken',response.accessToken);
+
+            },
+            error: function (response) {
+                alert("닉네임 혹은 비밀번호를 확인해주세요")
+            }
+        })
+    }
+    function logout() {
+        let token = $.cookie('accessToken');
+        if(token == undefined) {
+            return false;
+        }
+        $.removeCookie('accessToken', { path: '/' })
+        window.location.href = "/"
+
+    }
+    function count(type, itemId, eachPrice)  {
+
+        // // 결과를 표시할 element
+        // const resultElement = document.getElementById('result');
+        //
+        // // 현재 화면에 표시된 값
+        // let number = resultElement.innerText;
+
+        const itemIdCount = '#' + itemId + '-count';
+        const itemIdPrice = '#' + itemId + '-price';
+
+        let countNumber = $(itemIdCount).text();
+
+        // 더하기/빼기
+        if(type === 'plus') {
+            countNumber = parseInt(countNumber) + 1;
+            if(countNumber > 9) {
+                alert("수량을 10개 미만만 입력가능합니다.")
+                return false;
+            }
+        }else if(type === 'minus')  {
+            countNumber = parseInt(countNumber) - 1;
+            if(countNumber < 1) {
+                alert("수량은 1개 미만일 수 없습니다.");
+                return false;
+            }
+        }
+        // 결과 출력
+        $(itemIdCount).text(countNumber)
+        $(itemIdPrice).text(countNumber * parseInt(eachPrice))
+
+        let token = $.cookie(itemId);
+        let date = new Date();
+        date.setTime(date.getTime() + 60*60*1000) // 하루
+
+        let temp = token.split(',')
+        const cartInfo = `${itemId},${temp[1]},${temp[2]},${countNumber}`
+        $.cookie(itemId, cartInfo, {expires: date, path : '/'})
+    }
+
+    function check_dup() {
+        let nickname = $("#signup-nickname").val();
+        let password = $("#signup-password").val();
+        let passwordConfirm = $("#signup-passwordConfirm").val();
+        if (nickname == "") {
+            alert("닉네임 입력해주세요")
+            $("#signup-nickname").focus()
+            return false;
+        }
+        if (!is_nickname(nickname)) {
+            $("#signup-idHelp").removeClass("text-muted").addClass("text-danger");
+            $("#signup-nickname").focus()
+            return false;
+        }
+        $("#signup-idHelp").removeClass("text-danger").addClass("text-muted");
+
+        if (password == "") {
+            alert("패스워드를 입력해주세요");
+            $("#signup-password").focus()
+            return false;
+        }
+        if (!is_password(password)) {
+            $("#signup-passwordHelp").removeClass("text-muted").addClass("text-danger");
+            $("#signup-password").focus()
+            return false;
+        }
+        $("#signup-passwordHelp").removeClass("text-danger").addClass("text-muted");
+
+        if (passwordConfirm == "") {
+            alert("패스워드 확인을 입력해주세요");
+            $("#passwordConfirm").focus()
+            return false;
+        }
+        if (!is_password(passwordConfirm)) {
+            $("#signup-passwordConfirmHelp").text("공백없이 문자와 숫자로만 8자 이상 20자 이내로 입력하세요.").removeClass("text-muted").addClass("text-danger");
+            $("#signup-passwordConfirm").focus()
+            return false;
+        }
+        $("#passwordConfirmHelp").text("").removeClass("text-danger").addClass("text-muted");
+
+        return true;
+    }
+    function is_nickname(asValue) {
+        var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{3,10}$/;
+        return regExp.test(asValue);
+    }
+    function is_password(asValue) {
+        var regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+        return regExp.test(asValue);
+    }
+
+    function searchKeyword() {
+        $('#category-toggle li .nav-link').removeClass('active');
+
+        viewItems(initCategoryId, $("#keyword").val());
+
+        $("#keyword").val(initKeyword);
+    }
+    function viewCart() {
+
+        $("#cart-table-body").empty();
+
+        //
+        const keys = $.cookie('key')
+
+        if(keys == undefined) {
+            const emptyInfo = `<tr><td colspan="6">장바구니가 비었습니다.</td></tr>`
+            $("#cart-table-body").append(emptyInfo);
+            return false;
+        }
+        const itemKeys = keys.split(',')
+        $.each(itemKeys, function (index, itemId) {
+            const cartCookie = $.cookie(itemId);
+            const eachItemInfo = cartCookie.split(',') // 하나에 쿠키에 저장된 값들 // id,품명,가격,수량
+
+            const info = `<tr id="${itemId}">
+                            <td>${eachItemInfo[1]}</td>
+                            <td><button type="button" class="btn btn-info" onclick="count('plus','${itemId}','${eachItemInfo[2]}')">+</button></td>
+                            <td id="${itemId}-count">${eachItemInfo[3]}</td>
+                            <td><button type="button" class="btn btn-info" onclick="count('minus','${itemId}','${eachItemInfo[2]}')">-</button></td>
+                            <td id="${itemId}-price">${parseInt(eachItemInfo[2]) * parseInt(eachItemInfo[3])}</td>
+                            <td><button type="button" class="btn btn-warning" onclick="deleteCartItem('${itemId}')">삭제</button></td>
+                        </tr>`
+            $("#cart-table-body").append(info);
+
+        })
+
+    }
+</script>
+<script type="application/javascript" th:inline="javascript" th:fragment="main-script">
+
+    function viewItems(categoryId, keyword) {
+
+        $.ajax({
+            type: "GET",
+            url: "/api/items",
+            data: {
+                categoryId: categoryId,
+                keyword: keyword
+            },
+            success: function (items) {
+                $('#item_list').empty();
+
+                //let itemCard = `<div class="row">`
+                $.each(items, function (index, item) {
+                    let itemCard = `<div class="col-sm-3 d-flex align-items-stretch" >
+                                        <div class="card">
+                                            <div class="card-header"></div>
+                                            <img class="card-img-top" src="${item.imgUrl}" style="width: 100%; height: 15vw; object-fit: cover;"/>
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <button type="button" class="btn btn-warning"
+                                                      data-itemId="${item.id}" data-name="${item.name}" data-price="${item.price}"
+                                                      onclick="addCart('${item.id}','${item.name}','${item.price}')"
+                                                    >장바구니+</button>
+                                                    &nbsp;&nbsp;
+                                                    ${item.name}&nbsp;&nbsp;<span>${item.price}원</span>
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                    `
+                    $("#item_list").append(itemCard);
+                })
+            },
+            error: function (response) {
+                alert("검색 조건을 확인해주세요")
+            }
+        })
+    }
+    function addCart(itemId, name, price) {
+        // var date = new Date();
+        // date.setTime(date.getTime() + 1*60*1000); // 1분
+        // $.cookie('key', 'value', { expires: date, path : '/' });
+
+
+        let token = $.cookie(itemId);
+        let date = new Date();
+        date.setTime(date.getTime() + 60*60*1000) // 하루
+
+        if (token == undefined) {
+            // id,품명,가격,수량
+            const cartInfo = `${itemId},${name},${price},1`;
+            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
+
+
+            // 쿠키 키값만을 저장하는 저장소를 새로 만든다.
+            const key = $.cookie('key')
+            if(key == undefined) {
+                $.cookie('key', itemId, {expires: date, path : '/'})
+            } else {
+                const newKey = key + `,${itemId}`
+                $.cookie('key', newKey, {expires: date, path : '/'})
+            }
+
+        } else {
+            let temp = token.split(',')
+
+            let count = parseInt(temp[3]);
+            if (count == 9) {
+                alert("최대 9까지 주문 가능합니다.")
+                return false;
+            }
+            count ++;
+            const cartInfo = `${itemId},${name},${price},${count}`
+            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
+
+        }
+        alert("장바구니에 추가되었습니다.");
+    }
+
+    function deleteCartItem(itemId) {
+        const itemElement = '#' + itemId;
+        $(itemElement).remove();
+        $.removeCookie(itemId, {path: '/'})
+
+        let keys = $.cookie('key')
+
+        if(keys.length <= 2) {
+            $.removeCookie('key', {path: '/'});
+        } else {
+            let keys2 = keys.split(',');
+
+            let newKey = "";
+            $.each(keys2, function(index, key) {
+                if(key != itemId) {
+                    newKey += `${key},`
+                }
+            })
+            newKey = newKey.replace(/,\s*$/, "");
+            let date = new Date();
+            date.setTime(date.getTime() + 60*60*1000) // 하루
+            $.cookie('key', newKey, {expires: date, path : '/'})
+        }
+
+    }
+
+    function orderCartItem() {
+        const token = $.cookie('accessToken')
+        let keys = $.cookie('key');
+
+        if(token == undefined) {
+            alert("주문은 로그인 후 이용가능합니다.")
+            return false;
+        }
+
+        if(keys == undefined) {
+            alert("주문 할 상품이 없습니다.")
+            return false;
+        }
+
+        let dict = {}
+        keys = keys.split(',')
+        $.each(keys, function(index, key) {
+            let eachItemInfo = $.cookie(key).split(',')
+            dict[eachItemInfo[0]] = parseInt(eachItemInfo[3])
+        })
+
+
+        $.ajax({
+            type: "POST",
+            url: "/api/orders",
+            headers: {
+              "Authorization": "Bearer " + token
+            },
+            data: {
+                orders: dict
+            },
+            success: function (response) {
+                alert('주문이 완료되었습니다.')
+                $("#cartModal").modal("hide");
+
+            },
+            error: function (responae) {
+                // Todo 에러 처리
+                alert("주문하는 도중 오류가 발생하였습니다.")
+            }
+        })
+    }
+</script>
+</html>
