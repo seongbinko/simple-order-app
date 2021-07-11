@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Map;
 
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
-
 
     @PostMapping("/api/orders")
     public ResponseEntity createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,

@@ -13,9 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 public abstract class BaseEntity {
 
-    @Id // primaryKey임을 알립니다.
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //  pk생성전략을 DB에 위임한다는 의미입니다. mysql로 보면 pk 필드를 auto_increment로 설정해 놓은 경우로 보면 됩니다.
     private Long id;
 
     @CreatedDate

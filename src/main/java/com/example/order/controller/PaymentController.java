@@ -24,6 +24,6 @@ public class PaymentController {
 
     @GetMapping("/api/payment")
     public ResponseEntity viewPayment(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok().body(paymentService.viewPayment(userDetails));
+        return paymentService.viewPayment(userDetails);
     }
 }

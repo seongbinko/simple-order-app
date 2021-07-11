@@ -9,6 +9,7 @@ import com.example.order.reposiroty.MemberRepository;
 import com.example.order.reposiroty.OrderRepository;
 import com.example.order.reposiroty.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,9 @@ import javax.persistence.TypedQuery;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class PaymentService {
 
     private final MemberRepository memberRepository;
@@ -31,7 +33,6 @@ public class PaymentService {
     @PersistenceContext
     EntityManager em;
 
-    @Transactional
     public void createPayment(UserDetails userDetails) {
 
         Member member = memberRepository.findByNickname(userDetails.getUsername())
@@ -53,17 +54,21 @@ public class PaymentService {
         member.addPayment(payment);
     }
 
-    public PaymentResponseDto viewPayment(UserDetails userDetails) {
+    public ResponseEntity viewPayment(UserDetails userDetails) {
         Member member = memberRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
+
+        if(member.getPayments().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         TypedQuery<Payment> query = em.createQuery("select p from Payment p where p.member = :member order by p.createdAt desc ", Payment.class);
         query.setParameter("member",member);
         query.setMaxResults(1);
 
         Payment payment = query.getSingleResult();
-        return PaymentResponseDto.builder()
+        return ResponseEntity.ok().body(PaymentResponseDto.builder()
                 .totalPrice(payment.getTotalPrice())
-                .createdAt(payment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).build();
+                .createdAt(payment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).build());
     }
 }

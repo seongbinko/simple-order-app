@@ -5,13 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
-    <title>데모판</title>
+    <title>데모 과제</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
     <!-- Popper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <!-- Latest compiled JavaScript -->
@@ -26,7 +25,7 @@
 </head>
 <nav th:fragment="main-nav" class="navbar navbar-expand-sm navbar-dark bg-dark">
     <a class="navbar-brand" href="/" th:href="@{/}">
-        데모 메뉴
+        데모 과제
     </a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
@@ -65,18 +64,13 @@
             </li>
         </ul>
     </div>
-    <!-- The Modal -->
     <div class="modal" id="cartModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-
-                <!-- Modal Header -->
                 <div class="modal-header">
                     <h1 class="modal-title">장바구니</h1>
                     <button type="button" class="close" data-dismiss="modal">×</button>
                 </div>
-
-                <!-- Modal body -->
                 <div class="modal-body">
                     <table class="table table-striped">
                         <thead>
@@ -94,10 +88,7 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Modal footer -->
                 <div class="modal-footer">
-<!--                    <h5>총가격: 20000원</h5>-->
                     <button type="button" class="btn btn-primary" onclick="orderCartItem()">주문하기</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">계속 쇼핑하기</button>
                 </div>
@@ -108,14 +99,10 @@
     <div class="modal" id="orderModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-
-                <!-- Modal Header -->
                 <div class="modal-header">
                     <h1 class="modal-title">주문내역</h1>
                     <button type="button" class="close" data-dismiss="modal">×</button>
                 </div>
-
-                <!-- Modal body -->
                 <div class="modal-body">
                     <table class="table table-striped">
                         <thead>
@@ -125,33 +112,24 @@
                             <th>주문액</th>
                         </tr>
                         </thead>
-                        <tbody id="order-table-body">
-
-                        </tbody>
+                        <tbody id="order-table-body"></tbody>
                     </table>
                 </div>
-
-                <!-- Modal footer -->
                 <div class="modal-footer">
                     <h5><span id="totalOrderPrice"></span></h5>
                     <button type="button" class="btn btn-primary" onclick="paymentOrder()">결제하기</button>
                     <button type="button" class="btn btn-danger" onclick="cancelOrder()">주문취소</button>
                 </div>
-
             </div>
         </div>
     </div>
     <div class="modal" id="paymentModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-
-                <!-- Modal Header -->
                 <div class="modal-header">
                     <h1 class="modal-title">결제 내역</h1>
                     <button type="button" class="close" data-dismiss="modal">×</button>
                 </div>
-
-                <!-- Modal body -->
                 <div class="modal-body">
                     <table class="table table-striped">
                         <thead>
@@ -169,14 +147,10 @@
     <div class="modal" id="loginModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-
-                <!-- Modal Header -->
                 <div class="modal-header">
                     <h1 class="modal-title">로그인</h1>
                     <button type="button" class="close" data-dismiss="modal">×</button>
                 </div>
-
-                <!-- Modal body -->
                 <div class="modal-body">
                     <div class="d-flex justify-content-center">
                         <form>
@@ -199,20 +173,15 @@
                     </div>
                 </div>
             </div>
-<!--        <script th:replace="fragments.html :: login"></script>-->
         </div>
     </div>
     <div class="modal" id="signupModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-
-                <!-- Modal Header -->
                 <div class="modal-header">
                     <h1 class="modal-title">회원가입</h1>
                     <button type="button" class="close" data-dismiss="modal">×</button>
                 </div>
-
-                <!-- Modal body -->
                 <div class="modal-body">
                     <div class="d-flex justify-content-center">
                         <form>
@@ -238,7 +207,6 @@
                     </div>
                 </div>
             </div>
-<!--            <script th:replace="fragments.html :: signup"></script>-->
         </div>
     </div>
     <script th:replace="fragments.html :: main-nav-script"></script>
@@ -286,7 +254,6 @@
                     $('#loginModal').modal('show');
                 },
                 error: function (responae) {
-                    // Todo 에러 처리
                     alert("닉네임 혹은 패스워드를 확인해주세요")
                 }
             })
@@ -306,16 +273,6 @@
             alert("패스워드를 입력해주세요");
             return false;
         }
-        // [{
-        //     "codes": ["invalid.nickname.loginRequestDto.nickname", "invalid.nickname.nickname", "invalid.nickname.java.lang.String", "invalid.nickname"],
-        //     "arguments": ["asdfasdf"],
-        //     "defaultMessage": "존재하지 않는 닉네임입니다.",
-        //     "objectName": "loginRequestDto",
-        //     "field": "nickname",
-        //     "rejectedValue": "asdfasdf",
-        //     "bindingFailure": false,
-        //     "code": "invalid.nickname"
-        // }]
         $.ajax({
             type: "POST",
             url: "/api/auth/local",
@@ -340,19 +297,11 @@
 
     }
     function count(type, itemId, eachPrice)  {
-
-        // // 결과를 표시할 element
-        // const resultElement = document.getElementById('result');
-        //
-        // // 현재 화면에 표시된 값
-        // let number = resultElement.innerText;
-
         const itemIdCount = '#' + itemId + '-count';
         const itemIdPrice = '#' + itemId + '-price';
 
         let countNumber = $(itemIdCount).text();
 
-        // 더하기/빼기
         if(type === 'plus') {
             countNumber = parseInt(countNumber) + 1;
             if(countNumber > 9) {
@@ -366,7 +315,7 @@
                 return false;
             }
         }
-        // 결과 출력
+
         $(itemIdCount).text(countNumber)
         $(itemIdPrice).text(countNumber * parseInt(eachPrice))
 
@@ -439,7 +388,6 @@
 
         $("#cart-table-body").empty();
 
-        //
         const keys = $.cookie('key')
 
         if(keys == undefined) {
@@ -470,9 +418,10 @@
 
     function getNewTokenExpiredTime() {
         let date = new Date();
-        date.setTime(date.getTime() + 60*60*1000);
+        date.setTime(date.getTime() + 30*60*1000);
         return date;
     }
+
     function checkIsLogin(modalInfo, e) {
         const token = $.cookie('accessToken')
 
@@ -531,7 +480,6 @@
             // id,품명,가격,수량
             const cartInfo = `${itemId},${name},${price},1`;
             $.cookie(itemId, cartInfo, {expires: date, path : '/'})
-
 
             // 쿠키 키값만을 저장하는 저장소를 새로 만든다.
             const key = $.cookie('key')
@@ -622,7 +570,7 @@
                 orderItemPriceList: orderItemPriceList,
                 countList: countList
             },
-            success: function (response) {
+            success: function () {
                 alert('주문이 완료되었습니다.')
                 $("#cartModal").modal("hide");
 
@@ -633,8 +581,7 @@
                     }
                 }
             },
-            error: function (responae) {
-                // Todo 에러 처리
+            error: function () {
                 alert("주문하는 도중 오류가 발생하였습니다.")
             }
         })
@@ -760,12 +707,7 @@
             },
             dataType: "json",
             success: function (payment) {
-                console.log(payment)
 
-                if(payment.length == 0) {
-                    $("#payment-table-body").append(`<tr><td colspan="2">주문 내역이 없습니다.</td></tr>`);
-                    return false;
-                }
                 let row = `<tr>
                                 <td>${payment.createdAt}</td>
                                 <td>${payment.totalPrice}</td>
@@ -773,12 +715,10 @@
                 $("#payment-table-body").append(row);
             },
             error: function () {
-                alert("주문내역 조회중 오류가 발생하였습니다.")
-                $("#order-li").hide();
+                $("#payment-table-body").append(`<tr><td colspan="2">결제 내역이 존재하지 않습니다.</td></tr>`);
+                return false;
             }
         })
     }
-
-
 </script>
 </html>

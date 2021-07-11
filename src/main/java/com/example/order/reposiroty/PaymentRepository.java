@@ -8,5 +8,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface PaymentRepository extends JpaRepository<Payment,Long> {
 
-
 }

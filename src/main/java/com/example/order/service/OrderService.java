@@ -32,11 +32,8 @@ public class OrderService {
 
     @Transactional
     public void createOrder(OrderRequestDto orderRequestDto, CustomUserDetails userDetails) {
-
-
         Member member = memberRepository.findByNickname(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
-
 
         Order newOrder = orderRepository.save(Order.builder()
                 .isPayment(false).build());

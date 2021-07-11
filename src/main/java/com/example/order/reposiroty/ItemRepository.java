@@ -11,7 +11,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-
     List<Item> findByNameContainingOrderByName(String keyword);
 
     List<Item> findByCategoryOrderByName(Category category);
