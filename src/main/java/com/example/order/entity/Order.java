@@ -31,4 +31,17 @@ public class Order extends BaseEntity {
     private Payment payment;
 
     private int orderPrice;
+
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void setOrderPrice(int orderPrice) {
+        this.orderPrice = orderPrice;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

@@ -23,7 +23,20 @@ public class OrderItem extends BaseEntity{
     @JoinColumn(name = "order_id")
     private Order order;
 
-    private int orderItemPrice;
+    private int orderItemPrice; // 상품가격은 달라질 수 있기 때문에 현재 주문상품가격이 필요
 
     private int count;
+
+
+    public void addItem(Item item) {
+        if(this.item != null) {
+            this.item.getOrderItems().remove(this);
+        }
+        this.item = item;
+        item.getOrderItems().add(this);
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }
