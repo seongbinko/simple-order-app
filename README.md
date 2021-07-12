@@ -10,7 +10,7 @@
 ```plian
 $ git clone https://github.com/seongbinko/simple-order-app.git
 $ cd simple-order-app
-$ java -jar build/libs/order-1.0.1-SNAPSHOT-20210711225147.jar
+$ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar 
 ```
 
 ## DB 설계
@@ -24,7 +24,9 @@ $ java -jar build/libs/order-1.0.1-SNAPSHOT-20210711225147.jar
     - categories (상품 카테고리 테이블)
     - payments (결제 정보 테이블)
 - 특징
-    - Inmemory DB 사용 및 data.sql 스크립트를 통한 더미 데이터 삽입
+    - H2 Inmemory DB 사용 및 data.sql 스크립트를 통한 더미 데이터 삽입
+    - 접속: localhost:8080/h2-console 접속 후 아래 정보 입력 후 확인
+    - <img width="440" alt="스크린샷 2021-07-12 오후 12 17 46" src="https://user-images.githubusercontent.com/60464424/125226111-6a26b880-e30b-11eb-906d-75cbc7c0f26b.png">
 
 ## API 
 
@@ -98,3 +100,4 @@ $ java -jar build/libs/order-1.0.1-SNAPSHOT-20210711225147.jar
 - 테스트 코드 작성
 - Jpa N+1 문제 해결
 - 주문 취소 로직 수정
+- 주문 삭제 버그 수정
