@@ -118,7 +118,7 @@
                 <div class="modal-footer">
                     <h5><span id="totalOrderPrice"></span></h5>
                     <button type="button" class="btn btn-primary" onclick="paymentOrder()">결제하기</button>
-<!--                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">주문취소</button>  // 버그로 인해 임시 막음-->
+                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">주문취소</button>
                 </div>
             </div>
         </div>
@@ -219,6 +219,7 @@
 <script type="application/javascript" th:inline="javascript" th:fragment="main-nav-script">
     const initCategoryId = 0;
     const initKeyword = "";
+    let orderStatus = false;
 
     $(document).ready(function () {
         let token = $.cookie('accessToken');
@@ -416,6 +417,7 @@
 </script>
 <script type="application/javascript" th:inline="javascript" th:fragment="main-script">
 
+
     function getNewTokenExpiredTime() {
         let date = new Date();
         date.setTime(date.getTime() + 30*60*1000);
@@ -609,9 +611,10 @@
                 if(orders.length == 0) {
                     let row = `<tr><td colspan="4" id="empty-order">주문 내역이 없습니다.</td></tr>`
                     $("#order-table-body").append(row);
+                    orderStatus = false;
                     return false;
                 }
-
+                orderStatus = true;
                 let totalPrice = 0
                 $.each(orders, function(index, order) {
                     let row = `<tr>
@@ -636,8 +639,19 @@
             }
         })
     }
+    function checkOrderStatus() {
+        if(!orderStatus) {
+            return false;
+        }
+        return true;
+    }
 
     function cancelOrder() {
+
+        if(!checkOrderStatus()) {
+            alert("주문할 내역이 없습니다");
+            return false;
+        }
 
         const token = $.cookie('accessToken')
         if(token == undefined) {
@@ -656,6 +670,7 @@
                 "Authorization": "Bearer " + token
             },
             success: function (response) {
+                alert("주문이 취소되었습니다.");
                 $("#orderModal").modal("hide");
 
             },
