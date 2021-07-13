@@ -16,7 +16,7 @@
 ```plian
 $ git clone https://github.com/seongbinko/simple-order-app.git
 $ cd simple-order-app
-$ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
+$ java -jar order-1.0.2-SNAPSHOT-20210713175249.jar
 $ localhost:8080/ 메인페이지로 접속
 ```
 
