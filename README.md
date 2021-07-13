@@ -1,10 +1,16 @@
 # Simple Order App
-- 소개: 간단하게 상품 주문 결제할 수 있는 어플리케이션
-- 특징
-    - REST API / Spring Boot / JPA / Dockerfile 를 통한 이미지 구성 
-    - Spring Security/ Jwt 인증 
 
-## Intallation
+## 개요
+- 간단소개 : 상품을 장바구니 주문 결제가 가능한 웹어플리케이션
+- 개발 인원 : 1명
+- 담당 역할 : 주제선정, 분석/설계, 인프라 구축 및 레이아웃, 개발, 테스트, 시연
+- 주요 기능 : 로그인/회원가입, 장바구니, 주문, 결제
+- 개발 환경 : Springboot 2.4.8, Spring Security, Spring Data Jpa, OpenJdk1.8
+- 데이터베이스 : H2 inmemory
+- 형상관리: git
+- 특징 : REST API / Spring Boot / JPA / Dockerfile 를 통한 이미지 구성 / Spring Security + Jwt를 활용한 인증
+
+## Installation
 
 - 설치 및 실행 방법
 ```plian
@@ -17,16 +23,20 @@ $ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
 ![스크린샷 2021-07-11 오후 11 31 56](https://user-images.githubusercontent.com/60464424/125199254-4e39fd00-e2a0-11eb-8f6a-9816913e63d0.png)
 
 - 구조
-    - Member (유저 테이블)
-    - Order (주문정보 테이블)
-    - Order_items (주문한 상품 테이블)
+    - member (유저 테이블)
+    - order (주문정보 테이블)
+    - order_items (주문한 상품 테이블)
     - items (상품 테이블)
     - categories (상품 카테고리 테이블)
     - payments (결제 정보 테이블)
 - 특징
     - H2 Inmemory DB 사용 및 data.sql 스크립트를 통한 더미 데이터 삽입
-    - 접속: localhost:8080/h2-console 접속 후 아래 정보 입력 후 확인
-    - <img width="440" alt="스크린샷 2021-07-12 오후 12 17 46" src="https://user-images.githubusercontent.com/60464424/125226111-6a26b880-e30b-11eb-906d-75cbc7c0f26b.png">
+- 접속
+  
+  <img width="440" alt="스크린샷 2021-07-12 오후 12 17 46" src="https://user-images.githubusercontent.com/60464424/125226111-6a26b880-e30b-11eb-906d-75cbc7c0f26b.png">
+  
+  localhost:8080/h2-console 접속 후 위의 정보 입력 후 확인
+  
 
 ## API 
 
@@ -37,7 +47,7 @@ $ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
 | 회원가입 | POST | /api/auth/local/new | 회원가입 |
 | 로그인    | POST | /api/auth/local        |  로그인 |
 
-- 소셜로그인 등이 추가되었을 때의 Rest api한 방식을 유지하기 위해 위처럼 설계하였습니다.
+- 소셜로그인 등이 추가되었을 때의 Rest api한 방식을 유지하기 위해 위처럼 설계
 - ex) /api/auth/kakao, /api/auth/google 
 
 ### 상품
@@ -72,12 +82,14 @@ $ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
 ### 회원가입
 ![스크린샷 2021-07-11 오후 11 44 34](https://user-images.githubusercontent.com/60464424/125199744-a8d45880-e2a2-11eb-8929-5b2bdde07078.png)
 
-- 프론트엔드 백엔드 둘다 유효성검사 처리를 하였으며 로그인 또한 유효성검사 처리를 하였다. 
+- 클라이언트, 서버단 모두 유효성검사 로직이 수행된다.
+- 가입이 완료되면 로그인창이 열리게된다.
 
 ### 로그인 시
 ![스크린샷 2021-07-11 오후 11 45 16](https://user-images.githubusercontent.com/60464424/125199745-a8d45880-e2a2-11eb-9a32-b3493d2776b5.png)
 
 - 로그인시 주문기능, 결제가 가능하도록 하였다.
+- 로그인시 jwt토큰이 발급되어 쿠키에 저장되며 유효시간은 1시간으로 설정하였다.
 
 ### 
 ![스크린샷 2021-07-11 오후 11 46 00](https://user-images.githubusercontent.com/60464424/125199746-a96cef00-e2a2-11eb-8c43-b3c968e97e38.png)
