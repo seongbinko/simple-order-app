@@ -512,13 +512,16 @@
 
         // 쿠키 Key값 최신화
         let keys = $.cookie('key')
+
+        console.log(keys)
+
         if(keys.length <= 2) {
             $.removeCookie('key', {path: '/'});
         } else {
-            let keys = keys.split(',');
+            let tempKey = keys.split(',');
 
             let newKey = "";
-            $.each(keys, function(index, key) {
+            $.each(tempKey, function(index, key) {
                 if(key != itemId) {
                     newKey += `${key},`
                 }

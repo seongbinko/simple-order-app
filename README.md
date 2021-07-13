@@ -16,7 +16,8 @@
 ```plian
 $ git clone https://github.com/seongbinko/simple-order-app.git
 $ cd simple-order-app
-$ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar 
+$ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
+$ localhost:8080/ 메인페이지로 접속
 ```
 
 ## DB 설계
@@ -112,4 +113,4 @@ $ java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
 - 테스트 코드 작성
 - Jpa N+1 문제 해결
 - 주문 취소 로직 수정
-- 주문 삭제 버그 수정
+- ~~장바구니 삭제 버그 수정~~ (2021.07.13 17:16 수정완료) 
