@@ -17,7 +17,9 @@ $ git clone https://github.com/seongbinko/simple-order-app.git
 $ cd simple-order-app
 $ java -jar order-1.0.3-SNAPSHOT-20210714122042.jar
 $ localhost:8080/ 메인페이지로 접속
-```
+
+*초기버전: java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
+``` 
 
 ## DB 설계
 ![스크린샷 2021-07-11 오후 11 31 56](https://user-images.githubusercontent.com/60464424/125199254-4e39fd00-e2a0-11eb-8f6a-9816913e63d0.png)
