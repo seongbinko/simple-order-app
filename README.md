@@ -5,7 +5,7 @@
 - 개발 인원 : 1명
 - 주요 기능 : 로그인/회원가입, 장바구니, 주문, 결제
 - 개발 환경 : Springboot 2.4.8, Spring Security, Spring Data Jpa, OpenJdk1.8
-- 데이터베이스 : H2 inmemory
+- 데이터베이스 : H2 (In-Memory DB)
 - 형상관리: git
 - 특징 : REST API / Spring Boot / JPA / Dockerfile 를 통한 이미지 구성 / Spring Security + Jwt를 활용한 인증
 
