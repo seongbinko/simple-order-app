@@ -2,7 +2,6 @@ package com.example.order.reposiroty;
 
 import com.example.order.entity.Category;
 import com.example.order.entity.Item;
-import com.example.order.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 

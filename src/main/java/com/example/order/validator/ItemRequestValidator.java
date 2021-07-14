@@ -1,12 +1,8 @@
 package com.example.order.validator;
 
 import com.example.order.controller.dto.ItemsRequestDto;
-import com.example.order.controller.dto.LoginRequestDto;
-import com.example.order.entity.Member;
 import com.example.order.reposiroty.CategoryRepository;
-import com.example.order.reposiroty.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

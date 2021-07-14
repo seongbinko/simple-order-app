@@ -1,5 +1,6 @@
 package com.example.order.controller;
 
+import com.example.order.config.jwt.CustomUserDetails;
 import com.example.order.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +17,14 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/api/payment")
-    public ResponseEntity createPayment(@AuthenticationPrincipal UserDetails userDetails) {
+    @PostMapping("/api/payments")
+    public ResponseEntity createPayment(@AuthenticationPrincipal CustomUserDetails userDetails) {
         paymentService.createPayment(userDetails);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/payment")
-    public ResponseEntity viewPayment(@AuthenticationPrincipal UserDetails userDetails) {
+    @GetMapping("/api/payments")
+    public ResponseEntity viewPayment(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return paymentService.viewPayment(userDetails);
     }
 }

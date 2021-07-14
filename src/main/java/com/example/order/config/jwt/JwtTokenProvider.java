@@ -1,7 +1,5 @@
 package com.example.order.config.jwt;
 
-// import 생략
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -49,7 +47,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now) // 토큰 발행일자
                 .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret값 세팅
-                .compact(); // String type으로 return
+                .compact();
     }
 
 

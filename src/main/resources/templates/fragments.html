@@ -1,4 +1,4 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -699,7 +699,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/api/payment",
+            url: "/api/payments",
             contentType: "application/json",
             headers: {
                 "Authorization": "Bearer " + token
@@ -724,7 +724,7 @@
 
         $.ajax({
             type: "GET",
-            url: "/api/payment",
+            url: "/api/payments",
             contentType: "application/json",
             headers: {
                 "Authorization": "Bearer " + token
@@ -734,7 +734,7 @@
 
                 let row = `<tr>
                                 <td>${payment.createdAt}</td>
-                                <td>${payment.totalPrice}</td>
+                                <td>${payment.totalPrice}원</td>
                             </tr>`
                 $("#payment-table-body").append(row);
             },

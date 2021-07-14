@@ -1,4 +1,3 @@
-
 insert into categories (name, created_at, modified_at) values('안주류', now(), now());
 insert into categories (name, created_at, modified_at) values('주류/음료', now(), now());
 
@@ -17,7 +16,6 @@ insert into items (name , price, stock_quantity, created_at, modified_at, catego
 insert into items (name , price, stock_quantity, created_at, modified_at, category_id, img_url, status) values ('치즈볼',4500 ,100, now(), now(),1, 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/TPAY_GDR003/M00185/1596181071item_700X700_toJPEGBot.jpg', 'Y');
 
 insert into items (name , price, stock_quantity, created_at, modified_at, category_id, img_url, status) values ('진로',4500 ,100, now(), now(),2, 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/TPAY_GDR003/M00169/1596179931item_700X700_toJPEGBot.jpg', 'Y');
--- insert into items (name , price, stock_quantity, created_at, modified_at, category_id, img_url, status) values ('테라',4500 ,100, now(), now(),2, 'http://d4x8ljrphtvpg.cloudfront.net/ads/hitejinro/terra_v_2020-09-08.gif', 'Y');
 insert into items (name , price, stock_quantity, created_at, modified_at, category_id, img_url, status) values ('처음처럼',4500 ,100, now(), now(),2, 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/TPAY_GDR003/M00198/1596180438item_700X700_toJPEGBot.jpg', 'Y');
 insert into items (name , price, stock_quantity, created_at, modified_at, category_id, img_url, status) values ('참이슬',4500 ,100, now(), now(),2, 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/TPAY_GDR003/M00201/1596180510item_700X700_toJPEGBot.jpg', 'Y');
 insert into items (name , price, stock_quantity, created_at, modified_at, category_id, img_url, status) values ('콜라',2000 ,100, now(), now(),2, 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/TPAY_GDR003/M00208/1596180769item_700X700_toJPEGBot.jpg', 'Y');

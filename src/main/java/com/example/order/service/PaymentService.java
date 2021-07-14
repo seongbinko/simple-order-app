@@ -1,17 +1,15 @@
 package com.example.order.service;
 
+import com.example.order.config.jwt.CustomUserDetails;
 import com.example.order.controller.dto.PaymentResponseDto;
 import com.example.order.entity.Member;
 import com.example.order.entity.Order;
 import com.example.order.entity.Payment;
-import com.example.order.exception.ResourceNotFoundException;
 import com.example.order.reposiroty.MemberRepository;
 import com.example.order.reposiroty.OrderRepository;
 import com.example.order.reposiroty.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +31,11 @@ public class PaymentService {
     @PersistenceContext
     EntityManager em;
 
-    public void createPayment(UserDetails userDetails) {
+    public void createPayment(CustomUserDetails userDetails) {
 
-        Member member = memberRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
+        Member member = memberRepository.findByNickname(userDetails.getUsername()).get();
 
-        List<Order> orders = orderRepository.findAllByMemberAndIsPaymentFalse(member);
+        List<Order> orders = orderRepository.findAllByMemberAndIsPaymentFalse(userDetails.getMember());
         int totalPrice = orders.stream()
                 .mapToInt(Order::getOrderPrice)
                 .sum();
@@ -54,9 +51,8 @@ public class PaymentService {
         member.addPayment(payment);
     }
 
-    public ResponseEntity viewPayment(UserDetails userDetails) {
-        Member member = memberRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
+    public ResponseEntity viewPayment(CustomUserDetails userDetails) {
+        Member member = memberRepository.findByNickname(userDetails.getUsername()).get();
 
         if(member.getPayments().isEmpty()) {
             return ResponseEntity.badRequest().build();

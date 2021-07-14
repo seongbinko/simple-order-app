@@ -1,7 +1,6 @@
 package com.example.order.controller.dto;
 
 import lombok.Data;
-import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 

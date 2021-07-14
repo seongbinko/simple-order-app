@@ -1,15 +1,12 @@
 package com.example.order.controller.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 @Builder
-@Getter
-@AllArgsConstructor
 public class OrderResponseDto {
 
     private Long id;

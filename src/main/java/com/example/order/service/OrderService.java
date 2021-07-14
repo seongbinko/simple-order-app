@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -30,10 +30,10 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
 
-    @Transactional
+
     public void createOrder(OrderRequestDto orderRequestDto, CustomUserDetails userDetails) {
-        Member member = memberRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
+
+        Member member = memberRepository.findByNickname(userDetails.getUsername()).get();
 
         Order newOrder = orderRepository.save(Order.builder()
                 .isPayment(false).build());
@@ -53,7 +53,6 @@ public class OrderService {
 
             orderPrice += count * price;
 
-
             newOrderItem.addItem(item);
             newOrder.addOrderItem(newOrderItem);
         }
@@ -61,17 +60,13 @@ public class OrderService {
         member.addOrder(newOrder);
     }
 
-    @Transactional
     public void deleteOrder(CustomUserDetails userDetails) {
-        Member member = memberRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
-        orderRepository.deleteByMember(member);
+        orderRepository.deleteByMember(userDetails.getMember());
     }
 
     public List<OrderResponseDto> viewOrders(CustomUserDetails userDetails) {
-        Member member = memberRepository.findByNickname(userDetails.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", userDetails.getUsername()));
-        List<Order> orders = orderRepository.findAllByMemberAndIsPaymentFalse(member);
+
+        List<Order> orders = orderRepository.findAllByMemberAndIsPaymentFalse(userDetails.getMember());
 
         return orders.stream().map(
                 order -> OrderResponseDto.builder()

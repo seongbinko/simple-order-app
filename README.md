@@ -16,7 +16,7 @@
 ```plian
 $ git clone https://github.com/seongbinko/simple-order-app.git
 $ cd simple-order-app
-$ java -jar order-1.0.2-SNAPSHOT-20210713175249.jar
+$ java -jar order-1.0.3-SNAPSHOT-20210714122042.jar
 $ localhost:8080/ 메인페이지로 접속
 ```
 
@@ -111,6 +111,6 @@ $ localhost:8080/ 메인페이지로 접속
 
 ---
 - 테스트 코드 작성
-- Jpa N+1 문제 해결
+- ~~Jpa N+1 문제 해결~~ (2021.07.14 12:19) 수정완료
 - ~~주문 취소 로직 수정~~ (2021.07.13 18:47 수정완료)
 - ~~장바구니 삭제 버그 수정~~ (2021.07.13 17:16 수정완료) 
