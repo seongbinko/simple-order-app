@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments.html :: head"></head>
 <body>
-<div th:replace="fragments.html :: main-nav"></div>
+<div th:replace="fragments.html :: nav"></div>
 <div class="py-5 text-center">
     <ul id="category-toggle" class="nav nav-pills justify-content-center">
         <li class="nav-item border">
@@ -16,8 +16,9 @@
         </li>
     </ul>
 </div>
-<div class="container">
-    <div id="item_list" class="row"></div>
+<div id="container" class="container">
+    <div id="empty-item"></div>
+    <div id="item-list" class="row"></div>
 </div>
 <div th:replace="fragments.html :: footer"></div>
 <script th:replace="fragments.html :: main-script"></script>

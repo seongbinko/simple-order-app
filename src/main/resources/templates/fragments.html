@@ -23,7 +23,7 @@
         }
     </style>
 </head>
-<nav th:fragment="main-nav" class="navbar navbar-expand-sm navbar-dark bg-dark">
+<nav th:fragment="nav" class="navbar navbar-expand-sm navbar-dark bg-dark">
     <a class="navbar-brand" href="/" th:href="@{/}">
         데모 과제
     </a>
@@ -49,7 +49,7 @@
             </li>
             &nbsp;&nbsp;
             <li class="nav-item" id="order-li">
-                <button class="nav-link btn btn-outline-danger" data-toggle="modal" data-target="#orderModal" onclick="viewOrder()">주문내역</button>
+                <button class="nav-link btn btn-outline-danger" data-toggle="modal" data-target="#orderModal" onclick="viewOrders()">주문내역</button>
             </li>
             &nbsp;&nbsp;
             <li class="nav-item" id="payment-li">
@@ -89,7 +89,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="orderCartItem()">주문하기</button>
+                    <button type="button" class="btn btn-primary" onclick="orderCartItems()">주문하기</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">계속 쇼핑하기</button>
                 </div>
 
@@ -117,8 +117,8 @@
                 </div>
                 <div class="modal-footer">
                     <h5><span id="totalOrderPrice"></span></h5>
-                    <button type="button" class="btn btn-primary" onclick="paymentOrder()">결제하기</button>
-                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">주문취소</button>
+                    <button type="button" class="btn btn-primary" onclick="paymentOrders()">결제하기</button>
+                    <button type="button" class="btn btn-danger" onclick="cancelOrders()">주문취소</button>
                 </div>
             </div>
         </div>
@@ -155,19 +155,17 @@
                     <div class="d-flex justify-content-center">
                         <form>
                             <div class="form-group">
-                                <label for="nickname">닉네임</label>
-                                <input type="text" class="form-control" id="nickname" >
-                                <small id="idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(._-) 사용 가능</small>
+                                <label for="login-nickname">닉네임</label>
+                                <input type="text" class="form-control" id="login-nickname" >
+                                <small id="login-idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(._-) 사용 가능</small>
                             </div>
                             <div class="form-group">
-                                <label for="password">패스워드</label>
-                                <input type="password" class="form-control" id="password" aria-describedby="passwordHelp">
-                                <small id="passwordHelp" class="form-text text-muted">공백없이 문자와 숫자로만 8자 이상 20자 이내로 입력하세요.</small>
+                                <label for="login-password">패스워드</label>
+                                <input type="password" class="form-control" id="login-password" aria-describedby="login-passwordHelp">
+                                <small id="login-passwordHelp" class="form-text text-muted">공백없이 문자와 숫자로만 8자 이상 20자 이내로 입력하세요.</small>
                             </div>
                             <div class="form-group">
-                                <button aria-describedby="submitHelp" class="btn btn-success btn-block" type="button"
-                                        onclick="login()">로그인
-                                </button>
+                                <button class="btn btn-success btn-block" type="button" onclick="login()">로그인</button>
                             </div>
                         </form>
                     </div>
@@ -191,7 +189,7 @@
                                 <small id="signup-idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(._-) 사용 가능</small>
                             </div>
                             <div class="form-group">
-                                <label for="password">패스워드</label>
+                                <label for="signup-password">패스워드</label>
                                 <input type="password" class="form-control" id="signup-password" aria-describedby="signup-passwordHelp">
                                 <small id="signup-passwordHelp" class="form-text text-muted">공백없이 문자와 숫자로만 8자 이상 20자 이내로 입력하세요.</small>
                             </div>
@@ -209,52 +207,75 @@
             </div>
         </div>
     </div>
-    <script th:replace="fragments.html :: main-nav-script"></script>
+    <script th:replace="fragments.html :: nav-script"></script>
 </nav>
 <footer th:fragment="footer">
     <div class="row justify-content-center">
         <small class="d-block mb-3 text-muted">&copy; github.com/seongbinko 2021</small>
     </div>
 </footer>
-<script type="application/javascript" th:inline="javascript" th:fragment="main-nav-script">
-    const initCategoryId = 0;
-    const initKeyword = "";
-    let orderStatus = false;
+<script type="application/javascript" th:inline="javascript" th:fragment="nav-script">
+    const INIT_CATEGORY_ID = 0;
+    const INIT_KEYWORD = "";
+    const ACCESS_TOKEN_KEY = "accessToken";
+    const CART_ITEMS_KEY = "key";
+
+    function checkIsToken(tokenName) {
+        if (getToken(tokenName) == undefined) {
+            return false;
+        }
+        return true;
+    }
+
+    function getToken(tokenName) {
+        return $.cookie(tokenName);
+    }
+
+    function createTokenExpiredTime() {
+        let date = new Date();
+        date.setTime(date.getTime() + 30*60*1000);
+        return date;
+    }
 
     $(document).ready(function () {
-        let token = $.cookie('accessToken');
-        if (token == undefined) {
-            $('#logout-li').hide();
-            $('#order-li').hide();
-            $('#payment-li').hide();
-        } else {
+
+        if (checkIsToken(ACCESS_TOKEN_KEY)) {
             $('#login-li').hide();
             $('#signup-li').hide();
             $('#logout-li').show();
             $('#order-li').show();
             $('#payment-li').show();
+        } else {
+            $('#logout-li').hide();
+            $('#order-li').hide();
+            $('#payment-li').hide();
         }
-
-        viewItems(initCategoryId, initKeyword);
+        viewItems(INIT_CATEGORY_ID, INIT_KEYWORD);
     })
 
+
     function signUp() {
-        if(check_dup()) {
+
+        const nickname = $("#signup-nickname").val();
+        const password = $("#signup-password").val();
+        const passwordConfirm = $("#signup-passwordConfirm").val();
+
+        if(checkSignUpForm(nickname, password, passwordConfirm)) {
             $.ajax({
                 type: "POST",
                 url: "/api/auth/local/new",
                 data: {
-                    nickname: $('#signup-nickname').val(),
-                    password: $('#signup-password').val(),
-                    passwordConfirm: $('#signup-passwordConfirm').val()
+                    nickname: nickname,
+                    password: password,
+                    passwordConfirm: passwordConfirm
                 },
                 success: function (response) {
-                    alert('회원가입이 완료되었습니다.')
-                    //window.location.href = "/";
+                    alert('회원가입이 완료되었습니다.');
+
                     $("#signupModal").modal("hide");
                     $('#loginModal').modal('show');
                 },
-                error: function (responae) {
+                error: function (response) {
                     alert("닉네임 혹은 패스워드를 확인해주세요")
                 }
             })
@@ -262,81 +283,37 @@
     }
     function login() {
 
-        let nickname = $("#nickname").val();
-        let password = $("#password").val();
+        const nickname = $("#login-nickname").val();
+        const password = $("#login-password").val();
 
-        if (nickname == "") {
-            alert("닉네임 입력해주세요");
-            return false;
+        if(checkLoginForm(nickname, password)) {
+            $.ajax({
+                type: "POST",
+                url: "/api/auth/local",
+                data: {nickname: nickname, password: password},
+                success: function (response) {
+                    $.cookie(ACCESS_TOKEN_KEY, response.accessToken, {expires: createTokenExpiredTime(), path: '/'});
+                    window.location.href = "/"
+                },
+                error: function (response) {
+                    alert("닉네임 혹은 비밀번호를 확인해주세요");
+                }
+            })
         }
-
-        if (password == "") {
-            alert("패스워드를 입력해주세요");
-            return false;
-        }
-        $.ajax({
-            type: "POST",
-            url: "/api/auth/local",
-            data: { nickname: nickname, password: password },
-            success: function (response) {
-
-                $.cookie('accessToken', response.accessToken, { expires: getNewTokenExpiredTime(), path : '/' });
-                window.location.href = "/"
-            },
-            error: function (response) {
-                alert("닉네임 혹은 비밀번호를 확인해주세요")
-            }
-        })
     }
     function logout() {
-        let token = $.cookie('accessToken');
-        if(token == undefined) {
-            return false;
-        }
-        $.removeCookie('accessToken', { path: '/' })
+        checkIsToken(ACCESS_TOKEN_KEY);
+        $.removeCookie(ACCESS_TOKEN_KEY, { path: '/' })
         window.location.href = "/"
-
     }
-    function count(type, itemId, eachPrice)  {
-        const itemIdCount = '#' + itemId + '-count';
-        const itemIdPrice = '#' + itemId + '-price';
+    function checkSignUpForm(nickname, password, passwordConfirm) {
 
-        let countNumber = $(itemIdCount).text();
-
-        if(type === 'plus') {
-            countNumber = parseInt(countNumber) + 1;
-            if(countNumber > 9) {
-                alert("수량을 10개 미만만 입력가능합니다.")
-                return false;
-            }
-        }else if(type === 'minus')  {
-            countNumber = parseInt(countNumber) - 1;
-            if(countNumber < 1) {
-                alert("수량은 1개 미만일 수 없습니다.");
-                return false;
-            }
-        }
-
-        $(itemIdCount).text(countNumber)
-        $(itemIdPrice).text(countNumber * parseInt(eachPrice))
-
-        let token = $.cookie(itemId);
-
-        let temp = token.split(',')
-        const cartInfo = `${itemId},${temp[1]},${temp[2]},${countNumber}`
-        $.cookie(itemId, cartInfo, {expires: getNewTokenExpiredTime(), path : '/'})
-    }
-
-    function check_dup() {
-        let nickname = $("#signup-nickname").val();
-        let password = $("#signup-password").val();
-        let passwordConfirm = $("#signup-passwordConfirm").val();
         if (nickname == "") {
-            alert("닉네임 입력해주세요")
+            alert("닉네임을 입력해주세요")
             $("#signup-nickname").focus()
             return false;
         }
-        if (!is_nickname(nickname)) {
+        if (!validateNickname(nickname)) {
             $("#signup-idHelp").removeClass("text-muted").addClass("text-danger");
             $("#signup-nickname").focus()
             return false;
@@ -348,7 +325,7 @@
             $("#signup-password").focus()
             return false;
         }
-        if (!is_password(password)) {
+        if (!validatePassword(password)) {
             $("#signup-passwordHelp").removeClass("text-muted").addClass("text-danger");
             $("#signup-password").focus()
             return false;
@@ -360,7 +337,7 @@
             $("#passwordConfirm").focus()
             return false;
         }
-        if (!is_password(passwordConfirm)) {
+        if (!validatePassword(passwordConfirm)) {
             $("#signup-passwordConfirmHelp").text("공백없이 문자와 숫자로만 8자 이상 20자 이내로 입력하세요.").removeClass("text-muted").addClass("text-danger");
             $("#signup-passwordConfirm").focus()
             return false;
@@ -369,204 +346,154 @@
 
         return true;
     }
-    function is_nickname(asValue) {
-        var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{3,10}$/;
-        return regExp.test(asValue);
+    function checkLoginForm(nickname, password) {
+
+        if (nickname == "") {
+            alert("닉네임을 입력해주세요")
+            $("#login-nickname").focus()
+            return false;
+        }
+        if (!validateNickname(nickname)) {
+            $("#login-idHelp").removeClass("text-muted").addClass("text-danger");
+            $("#login-nickname").focus()
+            return false;
+        }
+        $("#login-idHelp").removeClass("text-danger").addClass("text-muted");
+
+        if (password == "") {
+            alert("패스워드를 입력해주세요");
+            $("#login-password").focus()
+            return false;
+        }
+        if (!validatePassword(password)) {
+            $("#login-passwordHelp").removeClass("text-muted").addClass("text-danger");
+            $("#login-password").focus()
+            return false;
+        }
+        $("#login-passwordHelp").removeClass("text-danger").addClass("text-muted");
+
+        return true;
     }
-    function is_password(asValue) {
-        var regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
-        return regExp.test(asValue);
+    function validateNickname(nickname) {
+        const regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{3,10}$/;
+        return regExp.test(nickname);
+    }
+    function validatePassword(password) {
+        const regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+        return regExp.test(password);
     }
 
     function searchKeyword() {
         $('#category-toggle li .nav-link').removeClass('active');
 
-        viewItems(initCategoryId, $("#keyword").val());
+        viewItems(INIT_CATEGORY_ID, $("#keyword").val());
 
-        $("#keyword").val(initKeyword);
+        $("#keyword").val(INIT_KEYWORD); // 검색결과가 Input에 남지 않게 초기화
     }
+
     function viewCart() {
 
         $("#cart-table-body").empty();
 
-        const keys = $.cookie('key')
-
-        if(keys == undefined) {
-            const emptyInfo = `<tr><td colspan="6">장바구니가 비었습니다.</td></tr>`
-            $("#cart-table-body").append(emptyInfo);
+        if(!checkIsToken(CART_ITEMS_KEY)) {
+            $("#cart-table-body").append(`<tr><td colspan="6">장바구니가 비었습니다.</td></tr>`);
             return false;
         }
-        const itemKeys = keys.split(',')
-        $.each(itemKeys, function (index, itemId) {
-            const cartCookie = $.cookie(itemId);
-            const eachItemInfo = cartCookie.split(',') // 하나에 쿠키에 저장된 값들 // id,품명,가격,수량
+        const cartItemsKey = getToken(CART_ITEMS_KEY).split(',');
+        $.each(cartItemsKey, function (index, itemId) {
+            const cartItemInfo = $.cookie(itemId).split(','); // id,품명,가격,수량
 
-            const info = `<tr id="${itemId}">
-                            <td>${eachItemInfo[1]}</td>
-                            <td><button type="button" class="btn btn-info" onclick="count('plus','${itemId}','${eachItemInfo[2]}')">+</button></td>
-                            <td id="${itemId}-count">${eachItemInfo[3]}</td>
-                            <td><button type="button" class="btn btn-info" onclick="count('minus','${itemId}','${eachItemInfo[2]}')">-</button></td>
-                            <td id="${itemId}-price">${parseInt(eachItemInfo[2]) * parseInt(eachItemInfo[3])}</td>
+            const row = `<tr id="${itemId}">
+                            <td>${cartItemInfo[1]}</td>
+                            <td><button type="button" class="btn btn-info" onclick="calculateCartItems('plus', '${itemId}', ${parseInt(cartItemInfo[2])})">+</button></td>
+                            <td id="${itemId}-count">${cartItemInfo[3]}</td>
+                            <td><button type="button" class="btn btn-info" onclick="calculateCartItems('minus', '${itemId}', ${parseInt(cartItemInfo[2])} )">-</button></td>
+                            <td><span id="${itemId}-price">${parseInt(cartItemInfo[2]) * parseInt(cartItemInfo[3])}</span>원</td>
                             <td><button type="button" class="btn btn-warning" onclick="deleteCartItem('${itemId}')">삭제</button></td>
                         </tr>`
-            $("#cart-table-body").append(info);
+            $("#cart-table-body").append(row);
 
         })
 
     }
-</script>
-<script type="application/javascript" th:inline="javascript" th:fragment="main-script">
+    function calculateCartItems(type, itemId, eachPrice)  {
+        const countId = '#' + itemId + '-count';
+        const priceId = '#' + itemId + '-price';
 
-
-    function getNewTokenExpiredTime() {
-        let date = new Date();
-        date.setTime(date.getTime() + 30*60*1000);
-        return date;
-    }
-
-    function checkIsLogin(modalInfo, e) {
-        const token = $.cookie('accessToken')
-
-        if(token == undefined) {
-
-            alert("해당 기능은 로그인 후 이용가능합니다.")
-        }
-    }
-
-
-    function viewItems(categoryId, keyword) {
-
-        $.ajax({
-            type: "GET",
-            url: "/api/items",
-            data: {
-                categoryId: categoryId,
-                keyword: $.trim(keyword)
-            },
-            success: function (items) {
-                $('#item_list').empty();
-                $.each(items, function (index, item) {
-                    let itemCard = `<div class="col-sm-3 d-flex align-items-stretch" >
-                                        <div class="card">
-                                            <div class="card-header"></div>
-                                            <img class="card-img-top" src="${item.imgUrl}" style="width: 100%; height: 15vw; object-fit: cover;"/>
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    <button type="button" class="btn btn-warning"
-                                                      data-itemId="${item.id}" data-name="${item.name}" data-price="${item.price}"
-                                                      onclick="addCart('${item.id}','${item.name}','${item.price}')"
-                                                    >장바구니+</button>
-                                                    &nbsp;&nbsp;
-                                                    ${item.name}&nbsp;&nbsp;<span>${item.price}원</span>
-                                                </h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                    `
-                    $("#item_list").append(itemCard);
-                })
-            },
-            error: function (response) {
-                alert("검색 조건을 확인해주세요")
-            }
-        })
-    }
-    function addCart(itemId, name, price) {
-
-        let token = $.cookie(itemId);
-        const date = getNewTokenExpiredTime();
-
-        if (token == undefined) {
-            // id,품명,가격,수량
-            const cartInfo = `${itemId},${name},${price},1`;
-            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
-
-            // 쿠키 키값만을 저장하는 저장소를 새로 만든다.
-            const key = $.cookie('key')
-            if(key == undefined) {
-                $.cookie('key', itemId, {expires: date, path : '/'})
-            } else {
-                const newKey = key + `,${itemId}`
-                $.cookie('key', newKey, {expires: date, path : '/'})
-            }
-
-        } else {
-            let temp = token.split(',')
-
-            let count = parseInt(temp[3]);
-            if (count == 9) {
-                alert("최대 9까지 주문 가능합니다.")
+        let countNumber = parseInt($(countId).text());
+        if(type == 'plus') {
+            if(9 === countNumber) {
+                alert("수량은 9개 이하만 입력가능합니다.")
                 return false;
             }
-            count ++;
-            const cartInfo = `${itemId},${name},${price},${count}`
-            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
-
+            countNumber += 1;
+        } else if(type == 'minus')  {
+            if(1 === countNumber) {
+                alert("수량은 1개 미만일 수 없습니다.");
+                return false;
+            }
+            countNumber -= 1;
         }
-        alert("장바구니에 추가되었습니다.");
-    }
 
+        $(countId).text(countNumber);
+        $(priceId).text(countNumber * eachPrice);
+
+        const cartItemInfo = $.cookie(itemId).split(',');
+        const cartItemInfoCookie = `${itemId},${cartItemInfo[1]},${cartItemInfo[2]},${countNumber}`;
+        $.cookie(itemId, cartItemInfoCookie, {expires: createTokenExpiredTime(), path : '/'})
+    }
     function deleteCartItem(itemId) {
-        const itemElement = '#' + itemId;
-        $(itemElement).remove();
+        const itemTr = '#' + itemId;
+        $(itemTr).remove();
         $.removeCookie(itemId, {path: '/'})
 
+        //  CART_ITEMS_KEY 최신화
+        let itemsKey = getToken(CART_ITEMS_KEY).split(',');
+        if(itemsKey.length <= 1) {
+            $.removeCookie(CART_ITEMS_KEY, {path: '/'});
+            $("#cart-table-body").append(`<tr><td colspan="6">장바구니가 비었습니다.</td></tr>`);
 
-        // 쿠키 Key값 최신화
-        let keys = $.cookie('key')
-
-        console.log(keys)
-
-        if(keys.length <= 2) {
-            $.removeCookie('key', {path: '/'});
         } else {
-            let tempKey = keys.split(',');
-
             let newKey = "";
-            $.each(tempKey, function(index, key) {
-                if(key != itemId) {
-                    newKey += `${key},`
+            $.each(itemsKey, function (index, itemKey) {
+                if(itemKey != itemId) {
+                    newKey += `${itemKey},`;
                 }
             })
-            newKey = newKey.replace(/,\s*$/, ""); // 공백 제거
-
-            $.cookie('key', newKey, {expires: getNewTokenExpiredTime(), path : '/'})
+            newKey = newKey.replace(/,\s*$/, ""); // ',' 제거
+            $.cookie('key', newKey, {expires: createTokenExpiredTime(), path : '/'})
         }
 
     }
+    function orderCartItems() {
 
-    function orderCartItem() {
-
-        const token = $.cookie('accessToken')
-        if(token == undefined) {
+        if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 주문이 가능합니다.");
             return false;
         }
 
-        let keys = $.cookie('key');
-        if(keys == undefined) {
+        if(!checkIsToken(CART_ITEMS_KEY)) {
             alert("주문 할 상품이 없습니다.")
             return false;
         }
 
-        let itemIdList = [];
-        let orderItemPriceList = [];
-        let countList = [];
+        const itemIdList = [];
+        const orderItemPriceList = [];
+        const countList = [];
 
-        keys = keys.split(',')
-        $.each(keys, function(index, key) {
-            let eachItemInfo = $.cookie(key).split(',')
+        const itemsKey = getToken(CART_ITEMS_KEY).split(',');
+        $.each(itemsKey, function (index, itemKey) {
+            const eachItemInfo = getToken(itemKey).split(',')
             itemIdList.push(eachItemInfo[0]);
             orderItemPriceList.push(eachItemInfo[2]);
             countList.push(eachItemInfo[3]);
         })
 
-
         $.ajax({
             type: "POST",
             url: "/api/orders",
             headers: {
-              "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
             },
             data: {
                 itemIdList: itemIdList,
@@ -574,24 +501,27 @@
                 countList: countList
             },
             success: function () {
-                alert('주문이 완료되었습니다.')
+                alert('주문이 완료되었습니다.');
                 $("#cartModal").modal("hide");
 
                 const cookies = $.cookie();
-                for(let cookie in cookies) {
-                    if(cookie != 'accessToken') {
-                        $.removeCookie(cookie);
+                $.each(cookies, function(key) {
+                    if(key != ACCESS_TOKEN_KEY) {
+                        $.removeCookie(key);
                     }
-                }
+                })
             },
             error: function () {
                 alert("주문하는 도중 오류가 발생하였습니다.")
             }
         })
     }
-    function viewOrder() {
-        const token = $.cookie('accessToken')
-        if(token == undefined) {
+
+
+    let orderStatus = false;
+    function viewOrders() {
+
+        if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 조회가 가능합니다.");
             return false;
         }
@@ -603,13 +533,13 @@
             url: "/api/orders",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
             },
             dataType: "json",
             success: function (orders) {
-                console.log(orders)
+
                 if(orders.length == 0) {
-                    let row = `<tr><td colspan="4" id="empty-order">주문 내역이 없습니다.</td></tr>`
+                    let row = `<tr><td colspan="4" id="empty-orders">주문 내역이 없습니다.</td></tr>`
                     $("#order-table-body").append(row);
                     orderStatus = false;
                     return false;
@@ -639,26 +569,18 @@
             }
         })
     }
-    function checkOrderStatus() {
+    function cancelOrders() {
+
         if(!orderStatus) {
-            return false;
-        }
-        return true;
-    }
-
-    function cancelOrder() {
-
-        if(!checkOrderStatus()) {
             alert("주문할 내역이 없습니다");
             return false;
         }
 
-        const token = $.cookie('accessToken')
-        if(token == undefined) {
+        if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 주문이 가능합니다.");
             return false;
         }
-        if(confirm("주문을 취소하시겠습니까?") == false) {
+        if(!confirm("주문을 취소하시겠습니까?")) {
             return false;
         }
 
@@ -667,7 +589,7 @@
             url: "/api/orders",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
             },
             success: function (response) {
                 alert("주문이 취소되었습니다.");
@@ -679,43 +601,41 @@
             }
         })
     }
+    function paymentOrders() {
 
-    function paymentOrder() {
-
-
-        const token = $.cookie('accessToken')
-        if(token == undefined) {
+        if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 결제가 가능합니다.");
             return false;
         }
-        if($('#empty-order').text().length > 0) {
+        if($('#empty-orders').text().length > 0) {
             alert('결제할 내역이 존재하지 않습니다.')
             return false;
         }
 
-        if(confirm("결제 하시겠습니까?") == false) {
+        if(!confirm("결제 하시겠습니까?")) {
             return false;
         }
 
         $.ajax({
             type: "POST",
-            url: "/api/payments",
+            url: "/api/payment",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
             },
             success: function () {
                 alert("결제가 완료되었습니다.")
                 $("#orderModal").modal("hide");
             },
             error: function () {
-                alert("주문취소 도중 오류가 발생하였습니다.")
+                alert("결제 중 오류가 발생하였습니다.")
             }
         })
     }
+
     function viewPayment() {
-        const token = $.cookie('accessToken')
-        if(token == undefined) {
+
+        if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 조회가 가능합니다.");
             return false;
         }
@@ -724,14 +644,13 @@
 
         $.ajax({
             type: "GET",
-            url: "/api/payments",
+            url: "/api/payment",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
             },
             dataType: "json",
             success: function (payment) {
-
                 let row = `<tr>
                                 <td>${payment.createdAt}</td>
                                 <td>${payment.totalPrice}원</td>
@@ -743,6 +662,81 @@
                 return false;
             }
         })
+    }
+
+</script>
+<script type="application/javascript" th:inline="javascript" th:fragment="main-script">
+
+    function viewItems(categoryId, keyword) {
+        $.ajax({
+            type: "GET",
+            url: "/api/items",
+            data: {
+                categoryId: categoryId,
+                keyword: $.trim(keyword)
+            },
+            success: function (items) {
+                $('#empty-item').empty();
+                $('#item-list').empty();
+
+                if(items.length == 0) {
+                    $("#empty-item").append(`<p class="text-center">${keyword}에 해당하는 검색 결과가 존재하지 않습니다.</p>`);
+                } else {
+                    $.each(items, function (index, item) {
+                        const itemCard = `<div class="col-sm-3 d-flex align-items-stretch" >
+                                        <div class="card">
+                                            <div class="card-header"></div>
+                                            <img class="card-img-top" src="${item.imgUrl}" style="width: 100%; height: 15vw; object-fit: cover;"/>
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <button type="button" class="btn btn-warning"
+                                                      data-itemId="${item.id}" data-name="${item.name}" data-price="${item.price}"
+                                                      onclick="addCart('${item.id}','${item.name}','${item.price}')"
+                                                    >장바구니+</button>
+                                                    &nbsp;&nbsp;
+                                                    ${item.name}&nbsp;&nbsp;<span>${item.price}원</span>
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                    `
+                        $("#item-list").append(itemCard);
+                    })
+                }
+            },
+            error: function (response) {
+                alert("검색 조건을 확인해주세요")
+            }
+        })
+    }
+
+    function addCart(itemId, name, price) {
+        const date = createTokenExpiredTime();
+
+        if (checkIsToken(itemId)) {
+            let count = parseInt(getToken(itemId).split(',')[3]);
+            if (count == 9) {
+                alert("수량은 9개 이하만 입력가능합니다.");
+                return false;
+            }
+            count ++;
+            const cartInfo = `${itemId},${name},${price},${count}`
+            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
+
+        } else {
+            // id,품명,가격,수량
+            const cartInfo = `${itemId},${name},${price},1`;
+            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
+
+            // 키가 존재하면 키를 붙이고 아니면 새로만들기
+            if(checkIsToken(CART_ITEMS_KEY)) {
+                const newKey = getToken(CART_ITEMS_KEY) + `,${itemId}`
+                $.cookie(CART_ITEMS_KEY, newKey, {expires: date, path : '/'})
+            } else {
+                $.cookie(CART_ITEMS_KEY, itemId, {expires: date, path : '/'})
+            }
+        }
+        alert("장바구니에 추가되었습니다.");
     }
 </script>
 </html>
