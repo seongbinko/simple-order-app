@@ -1,4 +1,4 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -6,14 +6,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
     <title>데모 과제</title>
-    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Popper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
@@ -24,7 +20,7 @@
     </style>
 </head>
 <nav th:fragment="nav" class="navbar navbar-expand-sm navbar-dark bg-dark">
-    <a class="navbar-brand" href="/" th:href="@{/}">
+    <a class="navbar-brand" href="/">
         데모 과제
     </a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -214,21 +210,25 @@
         <small class="d-block mb-3 text-muted">&copy; github.com/seongbinko 2021</small>
     </div>
 </footer>
-<script type="application/javascript" th:inline="javascript" th:fragment="nav-script">
-    const INIT_CATEGORY_ID = 0;
-    const INIT_KEYWORD = "";
+<script type="application/javascript" th:inline="javascript" th:fragment="common-script">
     const ACCESS_TOKEN_KEY = "accessToken";
-    const CART_ITEMS_KEY = "key";
-
     function checkIsToken(tokenName) {
-        if (getToken(tokenName) == undefined) {
+        if (getCookie(tokenName) == undefined) {
             return false;
         }
         return true;
     }
 
-    function getToken(tokenName) {
+    function getCookie(tokenName) {
         return $.cookie(tokenName);
+    }
+
+    function createCookie(key, data, date) {
+        $.cookie(key, data, {expires: date, path: '/'});
+    }
+
+    function removeCookie(tokenName) {
+        $.removeCookie(tokenName, {path: '/'});
     }
 
     function createTokenExpiredTime() {
@@ -236,6 +236,11 @@
         date.setTime(date.getTime() + 30*60*1000);
         return date;
     }
+</script>
+<script type="application/javascript" th:inline="javascript" th:fragment="nav-script">
+    const INIT_CATEGORY_ID = 0;
+    const INIT_KEYWORD = "";
+    const CART_ITEMS_KEY = "key";
 
     $(document).ready(function () {
 
@@ -292,8 +297,8 @@
                 url: "/api/auth/local",
                 data: {nickname: nickname, password: password},
                 success: function (response) {
-                    $.cookie(ACCESS_TOKEN_KEY, response.accessToken, {expires: createTokenExpiredTime(), path: '/'});
-                    window.location.href = "/"
+                    createCookie(ACCESS_TOKEN_KEY, response.accessToken, createTokenExpiredTime());
+                    window.location.href = "/";
                 },
                 error: function (response) {
                     alert("닉네임 혹은 비밀번호를 확인해주세요");
@@ -303,7 +308,7 @@
     }
     function logout() {
         checkIsToken(ACCESS_TOKEN_KEY);
-        $.removeCookie(ACCESS_TOKEN_KEY, { path: '/' })
+        removeCookie(ACCESS_TOKEN_KEY);
         window.location.href = "/"
     }
     function checkSignUpForm(nickname, password, passwordConfirm) {
@@ -399,9 +404,9 @@
             $("#cart-table-body").append(`<tr><td colspan="6">장바구니가 비었습니다.</td></tr>`);
             return false;
         }
-        const cartItemsKey = getToken(CART_ITEMS_KEY).split(',');
+        const cartItemsKey = getCookie(CART_ITEMS_KEY).split(',');
         $.each(cartItemsKey, function (index, itemId) {
-            const cartItemInfo = $.cookie(itemId).split(','); // id,품명,가격,수량
+            const cartItemInfo = getCookie(itemId).split(','); // id,품명,가격,수량
 
             const row = `<tr id="${itemId}">
                             <td>${cartItemInfo[1]}</td>
@@ -438,19 +443,19 @@
         $(countId).text(countNumber);
         $(priceId).text(countNumber * eachPrice);
 
-        const cartItemInfo = $.cookie(itemId).split(',');
+        const cartItemInfo = getCookie(itemId).split(',');
         const cartItemInfoCookie = `${itemId},${cartItemInfo[1]},${cartItemInfo[2]},${countNumber}`;
         $.cookie(itemId, cartItemInfoCookie, {expires: createTokenExpiredTime(), path : '/'})
     }
     function deleteCartItem(itemId) {
         const itemTr = '#' + itemId;
         $(itemTr).remove();
-        $.removeCookie(itemId, {path: '/'})
+        removeCookie(itemId);
 
         //  CART_ITEMS_KEY 최신화
-        let itemsKey = getToken(CART_ITEMS_KEY).split(',');
+        let itemsKey = getCookie(CART_ITEMS_KEY).split(',');
         if(itemsKey.length <= 1) {
-            $.removeCookie(CART_ITEMS_KEY, {path: '/'});
+            removeCookie(CART_ITEMS_KEY);
             $("#cart-table-body").append(`<tr><td colspan="6">장바구니가 비었습니다.</td></tr>`);
 
         } else {
@@ -461,7 +466,7 @@
                 }
             })
             newKey = newKey.replace(/,\s*$/, ""); // ',' 제거
-            $.cookie('key', newKey, {expires: createTokenExpiredTime(), path : '/'})
+            createCookie(CART_ITEMS_KEY, newKey, createTokenExpiredTime());
         }
 
     }
@@ -481,9 +486,9 @@
         const orderItemPriceList = [];
         const countList = [];
 
-        const itemsKey = getToken(CART_ITEMS_KEY).split(',');
+        const itemsKey = getCookie(CART_ITEMS_KEY).split(',');
         $.each(itemsKey, function (index, itemKey) {
-            const eachItemInfo = getToken(itemKey).split(',')
+            const eachItemInfo = getCookie(itemKey).split(',')
             itemIdList.push(eachItemInfo[0]);
             orderItemPriceList.push(eachItemInfo[2]);
             countList.push(eachItemInfo[3]);
@@ -493,7 +498,7 @@
             type: "POST",
             url: "/api/orders",
             headers: {
-                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
+                "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
             data: {
                 itemIdList: itemIdList,
@@ -504,10 +509,9 @@
                 alert('주문이 완료되었습니다.');
                 $("#cartModal").modal("hide");
 
-                const cookies = $.cookie();
-                $.each(cookies, function(key) {
+                $.each($.cookie(), function(key) {
                     if(key != ACCESS_TOKEN_KEY) {
-                        $.removeCookie(key);
+                        removeCookie(key);
                     }
                 })
             },
@@ -533,7 +537,7 @@
             url: "/api/orders",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
+                "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
             dataType: "json",
             success: function (orders) {
@@ -589,7 +593,7 @@
             url: "/api/orders",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
+                "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
             success: function (response) {
                 alert("주문이 취소되었습니다.");
@@ -621,7 +625,7 @@
             url: "/api/payment",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
+                "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
             success: function () {
                 alert("결제가 완료되었습니다.")
@@ -647,7 +651,7 @@
             url: "/api/payment",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + getToken(ACCESS_TOKEN_KEY)
+                "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
             dataType: "json",
             success: function (payment) {
@@ -714,29 +718,30 @@
         const date = createTokenExpiredTime();
 
         if (checkIsToken(itemId)) {
-            let count = parseInt(getToken(itemId).split(',')[3]);
+            let count = parseInt(getCookie(itemId).split(',')[3]);
             if (count == 9) {
                 alert("수량은 9개 이하만 입력가능합니다.");
                 return false;
             }
             count ++;
             const cartInfo = `${itemId},${name},${price},${count}`
-            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
+            createCookie(itemId,cartInfo,date);
 
         } else {
             // id,품명,가격,수량
             const cartInfo = `${itemId},${name},${price},1`;
-            $.cookie(itemId, cartInfo, {expires: date, path : '/'})
+            createCookie(itemId, cartInfo, date);
 
             // 키가 존재하면 키를 붙이고 아니면 새로만들기
             if(checkIsToken(CART_ITEMS_KEY)) {
-                const newKey = getToken(CART_ITEMS_KEY) + `,${itemId}`
-                $.cookie(CART_ITEMS_KEY, newKey, {expires: date, path : '/'})
+                const newKey = getCookie(CART_ITEMS_KEY) + `,${itemId}`
+                createCookie(CART_ITEMS_KEY,newKey,date);
             } else {
-                $.cookie(CART_ITEMS_KEY, itemId, {expires: date, path : '/'})
+                createCookie(CART_ITEMS_KEY,itemId,date);
             }
         }
         alert("장바구니에 추가되었습니다.");
     }
 </script>
+
 </html>
