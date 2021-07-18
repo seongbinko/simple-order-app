@@ -35,7 +35,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -45,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                     .antMatchers("/orders/**").hasRole("USER")
-                    .antMatchers("/payments/**").hasRole("USER")
+                    .antMatchers("/payment/**").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin().disable()

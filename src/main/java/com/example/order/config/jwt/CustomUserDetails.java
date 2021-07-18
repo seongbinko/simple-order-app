@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Getter
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
@@ -24,6 +23,10 @@ public class CustomUserDetails implements UserDetails {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(authority);
         return authorities;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     @Override

@@ -9,7 +9,6 @@ import javax.validation.constraints.Pattern;
 @Data
 public class ItemsRequestDto {
 
-    @Pattern(regexp = "^[^\\{\\}\\[\\]\\/?.,;:|\\)*~`!\\^\\\\\\-_+<>@#$%&'\\(=\"]{0,20}$")
     private String keyword;
 
     @Min(0) @Max(9)

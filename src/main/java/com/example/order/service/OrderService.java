@@ -8,9 +8,9 @@ import com.example.order.entity.Item;
 import com.example.order.entity.Member;
 import com.example.order.entity.Order;
 import com.example.order.entity.OrderItem;
-import com.example.order.exception.ResourceNotFoundException;
 import com.example.order.reposiroty.ItemRepository;
 import com.example.order.reposiroty.MemberRepository;
+import com.example.order.reposiroty.OrderItemRepository;
 import com.example.order.reposiroty.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,41 +27,35 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final ItemRepository itemRepository;
-    private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
 
-    public void createOrder(OrderRequestDto orderRequestDto, CustomUserDetails userDetails) {
-
-        Member member = memberRepository.findByNickname(userDetails.getUsername()).get();
+    public void createOrder(List<OrderRequestDto> orderRequestDtos, CustomUserDetails userDetails) {
 
         Order newOrder = orderRepository.save(Order.builder()
-                .isPayment(false).build());
+                .isPayment(false)
+                .member(userDetails.getMember())
+                .build());
 
         int orderPrice = 0;
-        for(int i=0; i < orderRequestDto.getItemIdList().size(); i++) {
-            Long itemId = orderRequestDto.getItemIdList().get(i);
-            Integer count = orderRequestDto.getCountList().get(i);
-            Integer price = orderRequestDto.getOrderItemPriceList().get(i);
+        for(OrderRequestDto orderRequestDto : orderRequestDtos) {
 
-            Item item = itemRepository.findById(itemId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Item", "id", itemId));
+            Item item = itemRepository.findById(orderRequestDto.getItemId()).get();
 
-            OrderItem newOrderItem = OrderItem.builder()
-                    .count(count)
-                    .orderItemPrice(price).build();
-
-            orderPrice += count * price;
-
-            newOrderItem.addItem(item);
+            OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
+                    .orderItemPrice(orderRequestDto.getOrderItemPrice())
+                    .count(orderRequestDto.getOrderItemCount())
+                    .item(item)
+                    .build());
             newOrder.addOrderItem(newOrderItem);
+            orderPrice += newOrderItem.getOrderItemPrice() * newOrderItem.getCount();
         }
         newOrder.setOrderPrice(orderPrice);
-        member.addOrder(newOrder);
     }
 
     public void deleteOrder(CustomUserDetails userDetails) {
-        orderRepository.deleteByMember(userDetails.getMember());
+        orderRepository.deleteByMemberAndIsPaymentFalse(userDetails.getMember());
     }
 
     public List<OrderResponseDto> viewOrders(CustomUserDetails userDetails) {

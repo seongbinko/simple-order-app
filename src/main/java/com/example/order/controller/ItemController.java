@@ -24,14 +24,9 @@ public class ItemController {
     public void itemsBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(itemRequestValidator);
     }
-    /**
-     * 상품 전체 조회
-     */
+
     @GetMapping("/api/items")
-    public ResponseEntity viewItems(@Valid ItemsRequestDto itemsRequestDto, Errors errors) {
-        if(errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors.getAllErrors());
-        }
+    public ResponseEntity viewItems(@Valid ItemsRequestDto itemsRequestDto) {
        return ResponseEntity.ok().body(itemService.viewItems(itemsRequestDto));
     }
 }

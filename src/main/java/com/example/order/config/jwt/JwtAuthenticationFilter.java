@@ -20,7 +20,6 @@ import java.io.IOException;
  * UsernamePasswordAuthenticationFilter로 전달
  */
 
-// Todo list GenericFilterBean (abstract)
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -30,7 +29,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         // 헤더에서 Jwt를 받아온다.
-        String token = getJwtFromRequest((HttpServletRequest) request);
+        String token = jwtTokenProvider.getJwtFromRequest((HttpServletRequest) request);
         // 유효한 토큰인지 확인한다.
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             // 토큰이 유효하면 토큰으로 부터 유저정보를 가져온다.
@@ -39,13 +38,5 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
-    }
-
-    public String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        return null;
     }
 }

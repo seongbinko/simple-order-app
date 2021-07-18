@@ -1,15 +1,17 @@
 package com.example.order.controller.dto;
 
 import lombok.Data;
-
-import java.util.ArrayList;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class OrderRequestDto {
 
-    private ArrayList<Long> itemIdList;
+    @NotNull
+    private Long itemId;
 
-    private ArrayList<Integer> orderItemPriceList;
+    @NotNull
+    private Integer orderItemPrice;
 
-    private ArrayList<Integer> countList;
+    @NotNull
+    private Integer orderItemCount;
 }

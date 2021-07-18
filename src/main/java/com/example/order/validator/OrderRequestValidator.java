@@ -1,7 +1,9 @@
 package com.example.order.validator;
 
 import com.example.order.controller.dto.ItemsRequestDto;
+import com.example.order.controller.dto.OrderRequestDto;
 import com.example.order.reposiroty.CategoryRepository;
+import com.example.order.reposiroty.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -9,21 +11,21 @@ import org.springframework.validation.Validator;
 
 @Component
 @RequiredArgsConstructor
-public class ItemRequestValidator implements Validator {
+public class OrderRequestValidator implements Validator {
 
-    private final CategoryRepository categoryRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(ItemsRequestDto.class);
+        return clazz.isAssignableFrom(OrderRequestDto.class);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        ItemsRequestDto itemsRequestDto = (ItemsRequestDto) target;
+        OrderRequestDto orderRequestDto = (OrderRequestDto) target;
 
-        if(!(0 == itemsRequestDto.getCategoryId() || categoryRepository.existsById(Long.valueOf(itemsRequestDto.getCategoryId())))){
-            errors.rejectValue("categoryId", "invalid","존재하지 않은 카테고리입니다.");
+        if(!itemRepository.existsById(orderRequestDto.getItemId())) {
+            errors.rejectValue("itemId", "invalid.itemId","존재하지 않는 카테고리입니다.");
         }
     }
 }

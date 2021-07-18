@@ -7,10 +7,10 @@ import com.example.order.validator.LoginRequestValidator;
 import com.example.order.validator.SignUpRequestValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -25,7 +25,7 @@ public class MemberController {
     private final LoginRequestValidator loginRequestDtoValidator;
 
     @InitBinder("signUpRequestDto")
-    public void signupBinder(WebDataBinder webDataBinder) {
+    public void signUpBinder(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(signUpRequestValidator);
     }
 
@@ -34,20 +34,15 @@ public class MemberController {
         webDataBinder.addValidators(loginRequestDtoValidator);
     }
 
-    @PostMapping("api/auth/local/new")
-    public ResponseEntity signUp(@Valid SignUpRequestDto signUpRequestDto, Errors errors){
-        if(errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors.getAllErrors());
-        }
-        memberService.signup(signUpRequestDto);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("api/auth/local")
-    public ResponseEntity login(@Valid LoginRequestDto loginRequestDto, Errors errors) {
-        if(errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors.getAllErrors());
-        }
+    public ResponseEntity login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         return ResponseEntity.ok().body(memberService.login(loginRequestDto));
     }
+
+    @PostMapping("api/auth/local/new")
+    public ResponseEntity signUp(@RequestBody @Valid SignUpRequestDto signUpRequestDto){
+        memberService.signUp(signUpRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+
 }

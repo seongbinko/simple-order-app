@@ -23,7 +23,7 @@ public class SignUpRequestValidator implements Validator {
         SignUpRequestDto signUpRequestDto = (SignUpRequestDto) target;
 
         if(memberRepository.existsByNickname(signUpRequestDto.getNickname())) {
-            errors.rejectValue("nickname", "invalid.nickname", new Object[]{signUpRequestDto.getNickname()},"이미 사용중인 닉네임 입니다");
+            errors.rejectValue("nickname", "invalid.nickname", "이미 사용중인 닉네임 입니다");
         }
 
         if(!signUpRequestDto.getPassword().equals(signUpRequestDto.getPasswordConfirm())) {

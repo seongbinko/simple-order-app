@@ -28,7 +28,7 @@ public class ItemService {
             return createItemResponseDtoList(items);
 
         }
-        Category category = categoryRepository.findById(Long.valueOf(itemsRequestDto.getCategoryId())).orElse(null);
+        Category category = categoryRepository.findById(Long.valueOf(itemsRequestDto.getCategoryId())).get();
         List<Item> items = itemRepository.findByCategoryOrderByName(category);
         return createItemResponseDtoList(items);
     }

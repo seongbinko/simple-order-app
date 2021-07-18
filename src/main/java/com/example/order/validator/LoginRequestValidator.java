@@ -26,11 +26,11 @@ public class LoginRequestValidator implements Validator {
         LoginRequestDto loginRequestDto = (LoginRequestDto) target;
 
         if(!memberRepository.existsByNickname(loginRequestDto.getNickname())){
-            errors.rejectValue("nickname", "invalid.nickname", new Object[]{loginRequestDto.getNickname()},"존재하지 않는 닉네임입니다.");
+            errors.rejectValue("nickname", "invalid.nickname","존재하지 않는 닉네임입니다.");
         } else {
-            Member member = memberRepository.findByNickname(loginRequestDto.getNickname()).orElse(null);
+            Member member = memberRepository.findByNickname(loginRequestDto.getNickname()).get();
             if (!passwordEncoder.matches(loginRequestDto.getPassword(), member.getPassword())) {
-                errors.rejectValue("password", "invalid.password", new Object[]{loginRequestDto.getPassword()},"패스워드가 일치하지 않습니다.");
+                errors.rejectValue("password", "invalid.password","패스워드가 일치하지 않습니다.");
             }
         }
     }

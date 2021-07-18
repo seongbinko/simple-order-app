@@ -5,7 +5,6 @@ import com.example.order.controller.dto.LoginRequestDto;
 import com.example.order.controller.dto.SignUpRequestDto;
 import com.example.order.entity.Member;
 import com.example.order.entity.MemberRole;
-import com.example.order.exception.ResourceNotFoundException;
 import com.example.order.reposiroty.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +23,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void signup(SignUpRequestDto signUpRequestDto) {
+    public void signUp(SignUpRequestDto signUpRequestDto) {
         memberRepository.save(
                 Member.builder()
                         .nickname(signUpRequestDto.getNickname())
@@ -35,8 +34,7 @@ public class MemberService {
     }
 
     public Map<String, String> login(LoginRequestDto loginRequestDto) {
-        Member member = memberRepository.findByNickname(loginRequestDto.getNickname())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "nickname", loginRequestDto.getNickname()));
+        Member member = memberRepository.findByNickname(loginRequestDto.getNickname()).get();
         String token = jwtTokenProvider.createToken(member.getNickname(), member.getRole().toString());
         Map<String, String> map = new HashMap<>();
         map.put("accessToken", token);

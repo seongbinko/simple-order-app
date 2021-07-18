@@ -22,7 +22,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class Order extends BaseEntity {
 
     private int orderPrice;
 
-    private Boolean isPayment;
+    private boolean isPayment;
 
 
     public void addOrderItem(OrderItem orderItem) {
@@ -53,6 +53,6 @@ public class Order extends BaseEntity {
     }
 
     public void setIsPayment(Boolean payment) {
-        isPayment = payment;
+        this.isPayment = payment;
     }
 }

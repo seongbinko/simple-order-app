@@ -153,7 +153,7 @@
                             <div class="form-group">
                                 <label for="login-nickname">닉네임</label>
                                 <input type="text" class="form-control" id="login-nickname" >
-                                <small id="login-idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(._-) 사용 가능</small>
+                                <small id="login-idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(_-) 사용 가능</small>
                             </div>
                             <div class="form-group">
                                 <label for="login-password">패스워드</label>
@@ -182,7 +182,7 @@
                             <div class="form-group">
                                 <label for="signup-nickname">닉네임</label>
                                 <input type="text" class="form-control" id="signup-nickname" >
-                                <small id="signup-idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(._-) 사용 가능</small>
+                                <small id="signup-idHelp" class="form-text text-muted">공백없이 문자와 숫자로만 3자 이상 10자 이내로 입력하세요. 일부 특수문자(_-) 사용 가능</small>
                             </div>
                             <div class="form-group">
                                 <label for="signup-password">패스워드</label>
@@ -261,22 +261,20 @@
 
     function signUp() {
 
-        const nickname = $("#signup-nickname").val();
-        const password = $("#signup-password").val();
-        const passwordConfirm = $("#signup-passwordConfirm").val();
+        const signUpForm = {
+            "nickname": $("#signup-nickname").val(),
+            "password": $("#signup-password").val(),
+            "passwordConfirm" : $("#signup-passwordConfirm").val()
+        }
 
-        if(checkSignUpForm(nickname, password, passwordConfirm)) {
+        if(checkSignUpForm(signUpForm.nickname, signUpForm.password, signUpForm.passwordConfirm)) {
             $.ajax({
                 type: "POST",
                 url: "/api/auth/local/new",
-                data: {
-                    nickname: nickname,
-                    password: password,
-                    passwordConfirm: passwordConfirm
-                },
+                contentType: "application/json",
+                data: JSON.stringify(signUpForm),
                 success: function (response) {
                     alert('회원가입이 완료되었습니다.');
-
                     $("#signupModal").modal("hide");
                     $('#loginModal').modal('show');
                 },
@@ -288,14 +286,17 @@
     }
     function login() {
 
-        const nickname = $("#login-nickname").val();
-        const password = $("#login-password").val();
-
-        if(checkLoginForm(nickname, password)) {
+        const loginForm = {
+            "nickname": $("#login-nickname").val(),
+            "password": $("#login-password").val()
+        };
+        if(checkLoginForm(loginForm.nickname, loginForm.password)) {
             $.ajax({
                 type: "POST",
                 url: "/api/auth/local",
-                data: {nickname: nickname, password: password},
+                contentType: "application/json",
+                data: JSON.stringify(loginForm),
+                dataType: "json",
                 success: function (response) {
                     createCookie(ACCESS_TOKEN_KEY, response.accessToken, createTokenExpiredTime());
                     window.location.href = "/";
@@ -380,11 +381,11 @@
         return true;
     }
     function validateNickname(nickname) {
-        const regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{3,10}$/;
+        const regExp = /^[ㄱ-ㅎ가-힣a-z0-9_-]{3,10}$/;
         return regExp.test(nickname);
     }
     function validatePassword(password) {
-        const regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+        const regExp = /^[a-zA-Z0-9]{8,20}$/;
         return regExp.test(password);
     }
 
@@ -474,7 +475,7 @@
 
         if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 주문이 가능합니다.");
-            return false;
+            window.location.href = "/";
         }
 
         if(!checkIsToken(CART_ITEMS_KEY)) {
@@ -482,17 +483,18 @@
             return false;
         }
 
-        const itemIdList = [];
-        const orderItemPriceList = [];
-        const countList = [];
-
+        const orderRequestDtos = [];
         const itemsKey = getCookie(CART_ITEMS_KEY).split(',');
         $.each(itemsKey, function (index, itemKey) {
             const eachItemInfo = getCookie(itemKey).split(',')
-            itemIdList.push(eachItemInfo[0]);
-            orderItemPriceList.push(eachItemInfo[2]);
-            countList.push(eachItemInfo[3]);
+            const orderInfo = {
+                itemId: eachItemInfo[0],
+                orderItemPrice: eachItemInfo[2],
+                orderItemCount: eachItemInfo[3]
+            };
+            orderRequestDtos.push(orderInfo);
         })
+
 
         $.ajax({
             type: "POST",
@@ -500,11 +502,9 @@
             headers: {
                 "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
-            data: {
-                itemIdList: itemIdList,
-                orderItemPriceList: orderItemPriceList,
-                countList: countList
-            },
+            contentType: "application/json",
+            data: JSON.stringify(orderRequestDtos),
+            dataType: "json",
             success: function () {
                 alert('주문이 완료되었습니다.');
                 $("#cartModal").modal("hide");
@@ -527,7 +527,7 @@
 
         if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 조회가 가능합니다.");
-            return false;
+            window.location.href = "/";
         }
         $("#order-table-body").empty();
         $('#totalOrderPrice').empty();
@@ -535,7 +535,6 @@
         $.ajax({
             type: "GET",
             url: "/api/orders",
-            contentType: "application/json",
             headers: {
                 "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
@@ -575,15 +574,16 @@
     }
     function cancelOrders() {
 
+        if(!checkIsToken(ACCESS_TOKEN_KEY)) {
+            alert("로그인 후 주문이 가능합니다.");
+            window.location.href = "/";
+        }
+
         if(!orderStatus) {
-            alert("주문할 내역이 없습니다");
+            alert("취소할 내역이 없습니다");
             return false;
         }
 
-        if(!checkIsToken(ACCESS_TOKEN_KEY)) {
-            alert("로그인 후 주문이 가능합니다.");
-            return false;
-        }
         if(!confirm("주문을 취소하시겠습니까?")) {
             return false;
         }
@@ -591,16 +591,15 @@
         $.ajax({
             type: "DELETE",
             url: "/api/orders",
-            contentType: "application/json",
             headers: {
                 "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
-            success: function (response) {
+            success: function () {
                 alert("주문이 취소되었습니다.");
                 $("#orderModal").modal("hide");
 
             },
-            error: function (response) {
+            error: function () {
                 alert("주문취소 도중 오류가 발생하였습니다.")
             }
         })
@@ -609,7 +608,7 @@
 
         if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 결제가 가능합니다.");
-            return false;
+            window.location.href = "/";
         }
         if($('#empty-orders').text().length > 0) {
             alert('결제할 내역이 존재하지 않습니다.')
@@ -623,7 +622,6 @@
         $.ajax({
             type: "POST",
             url: "/api/payment",
-            contentType: "application/json",
             headers: {
                 "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
@@ -641,7 +639,7 @@
 
         if(!checkIsToken(ACCESS_TOKEN_KEY)) {
             alert("로그인 후 조회가 가능합니다.");
-            return false;
+            window.location.href = "/";
         }
 
         $("#payment-table-body").empty();
@@ -649,21 +647,23 @@
         $.ajax({
             type: "GET",
             url: "/api/payment",
-            contentType: "application/json",
             headers: {
                 "Authorization": "Bearer " + getCookie(ACCESS_TOKEN_KEY)
             },
-            dataType: "json",
             success: function (payment) {
-                let row = `<tr>
+
+                if(payment.length == 0) {
+                    $("#payment-table-body").append(`<tr><td colspan="2">결제 내역이 존재하지 않습니다.</td></tr>`);
+                    return false;
+                }
+                const row = `<tr>
                                 <td>${payment.createdAt}</td>
                                 <td>${payment.totalPrice}원</td>
                             </tr>`
                 $("#payment-table-body").append(row);
             },
             error: function () {
-                $("#payment-table-body").append(`<tr><td colspan="2">결제 내역이 존재하지 않습니다.</td></tr>`);
-                return false;
+                alert("결제 내역 조회중 오류가 발생하였습니다.");
             }
         })
     }

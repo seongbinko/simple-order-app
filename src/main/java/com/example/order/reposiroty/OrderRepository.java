@@ -10,8 +10,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
-    @Transactional
-    void deleteByMember(Member member);
-
     List<Order> findAllByMemberAndIsPaymentFalse(Member member);
+
+    @Transactional
+    void deleteByMemberAndIsPaymentFalse(Member member);
 }
