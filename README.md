@@ -15,10 +15,10 @@
 ```plian
 $ git clone https://github.com/seongbinko/simple-order-app.git
 $ cd simple-order-app
-$ java -jar order-1.0.3-SNAPSHOT-20210714122042.jar
+$ java -jar order-1.0.4-SNAPSHOT-20210718211418.jar
 $ localhost:8080/ 메인페이지로 접속
 
-*초기버전: java -jar order-1.0.4-SNAPSHOT-20210718211418.jar
+*초기버전: java -jar order-1.0.1-SNAPSHOT-20210711231723.jar
 ``` 
 
 ## DB 설계
