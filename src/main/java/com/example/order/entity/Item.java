@@ -23,11 +23,7 @@ public class Item extends BaseEntity{
     @Column(nullable = false)
     private int price;
 
-    private int stockQuantity;
-
     private String imgUrl;
-
-    private String status;
 
     @OneToMany(mappedBy = "item")
     @Builder.Default

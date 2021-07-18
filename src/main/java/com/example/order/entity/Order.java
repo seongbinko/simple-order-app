@@ -34,7 +34,6 @@ public class Order extends BaseEntity {
 
     private boolean isPayment;
 
-
     public void addOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
         orderItem.setOrder(this);

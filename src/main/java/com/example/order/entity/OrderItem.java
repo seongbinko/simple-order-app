@@ -27,11 +27,6 @@ public class OrderItem extends BaseEntity{
 
     private int count;
 
-    public void addItem(Item item) {
-        this.item = item;
-        item.getOrderItems().add(this);
-    }
-
     public void setOrder(Order order) {
         this.order = order;
     }

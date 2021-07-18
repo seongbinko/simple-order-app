@@ -41,8 +41,6 @@ public class ItemService {
                 .name(item.getName())
                 .imgUrl(item.getImgUrl())
                 .price(item.getPrice())
-                .stockQuantity(item.getStockQuantity())
-                .status(item.getStatus())
                 .build()).collect(Collectors.toList());
     }
 }
