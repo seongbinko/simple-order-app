@@ -34,4 +34,8 @@ public class Payment extends BaseEntity{
     public void setMember(Member member) {
         this.member = member;
     }
+
+    public void plusTotalPrice(int price) {
+        this.totalPrice += price;
+    }
 }

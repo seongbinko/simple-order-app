@@ -10,11 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -24,40 +22,31 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
 
-    @PersistenceContext
-    EntityManager em;
-
     public void createPayment(CustomUserDetails userDetails) {
 
         List<Order> orders = orderRepository.findAllByMemberAndIsPaymentFalse(userDetails.getMember());
-        int totalPrice = orders.stream()
-                .mapToInt(Order::getOrderPrice)
-                .sum();
 
         Payment payment = paymentRepository.save(Payment.builder()
-                .totalPrice(totalPrice)
                 .member(userDetails.getMember())
                 .build());
 
         for (Order order: orders) {
             order.setIsPayment(true);
             payment.addOrder(order);
+            payment.plusTotalPrice(order.getOrderPrice());
         }
     }
 
     public PaymentResponseDto viewPayment(CustomUserDetails userDetails) {
 
-        if(!paymentRepository.existsByMember(userDetails.getMember())) {
+        Optional<Payment> payment = paymentRepository.findFirstByMemberOrderByCreatedAtDesc(userDetails.getMember());
+
+        if(!payment.isPresent()) {
             return null;
         }
 
-        TypedQuery<Payment> query = em.createQuery("select p from Payment p where p.member = :member order by p.createdAt desc ", Payment.class);
-        query.setParameter("member",userDetails.getMember());
-        query.setMaxResults(1);
-        Payment payment = query.getSingleResult();
-
         return PaymentResponseDto.builder()
-                .totalPrice(payment.getTotalPrice())
-                .createdAt(payment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).build();
+                .totalPrice(payment.get().getTotalPrice())
+                .createdAt(payment.get().getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).build();
     }
 }
