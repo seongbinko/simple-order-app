@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
+      hibernate.default_batch_fetch_size: 1000
+  h2:
+    console:
+      enabled: true
+  thymeleaf:
+    cache: false
+logging.level:
+  org.hibernate.SQL: debug #show sql과 동일하나 위처럼 할시 로그를 남길 수 있다.
+# org.hibernate.type: trace # query parameter ?,? 를 보여준다. 현재는 p6 라이브러리를 의존성 주입을 받아서 한다.

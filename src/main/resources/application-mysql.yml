@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://database-mysql:3306/simple?useUnicode=yes&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull
+    username: simple
+    password: simple
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+      hibernate.default_batch_fetch_size: 1000
+    defer-datasource-initialization: true
+    show-sql: true
+  #  sql:
+  #    init:
+  #      mode: always / springboot 2.5 이상
+  thymeleaf:
+    cache: false
+logging.level:
+  org.hibernate.SQL: debug #show sql과 동일하나 위처럼 할시 로그를 남길 수 있다.
+# org.hibernate.type: trace # query parameter ?,? 를 보여준다. 현재는 p6 라이브러리를 의존성 주입을 받아서 한다.
